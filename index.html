@@ -166,6 +166,7 @@
             <label class="title">ประเทศของหน่วยงาน<span class="en"> / Country</span> *</label>
             <select id="org_country" required>
               <option value="">— เลือกประเทศ / Select Country —</option>
+              <!-- รายชื่อประเทศ (ครบชุด) -->
               <option value="Thailand">Thailand</option>
               <option value="Afghanistan">Afghanistan</option>
               <option value="Albania">Albania</option>
@@ -636,6 +637,20 @@
         var isMedia = (sel.value === 'media');
         proofBlock.classList.toggle('hidden', !isMedia);
         pageBlock.classList.toggle('hidden', !isMedia);
+
+        // ถ้าเปลี่ยนจาก media ไปเป็นประเภทอื่น ให้รีเซ็ตสถานะอัปโหลด
+        if (!isMedia) {
+          var fileInput = document.getElementById('media_proof_file');
+          var statusEl = document.getElementById('media-proof-status');
+          var urlHidden = document.getElementById('media_proof_image_url');
+          if (fileInput) fileInput.value = '';
+          if (urlHidden) urlHidden.value = '';
+          mediaUploadState = { path: null, url: null };
+          if (statusEl) {
+            statusEl.textContent = 'อัปโหลดภาพบัตรสื่อโดยตรงจากอุปกรณ์ • Upload your media ID photo from device.';
+            statusEl.style.color = '#666';
+          }
+        }
       }
       sel.addEventListener('change', toggle);
       toggle();
@@ -803,6 +818,20 @@
         } else {
           document.getElementById('vip-org-form').reset();
           mediaUploadState = { path: null, url: null };
+          // ซ่อน block ผู้ติดตาม + media proof กลับไปสภาพเริ่มต้น
+          ['accompany_1_block','accompany_2_block','accompany_3_block','accompany_4_block','accompany_extra_note_block']
+            .forEach(function(id){ var el = document.getElementById(id); if(el) el.classList.add('hidden'); });
+          document.getElementById('media-proof-block').classList.add('hidden');
+          document.getElementById('media-page-block').classList.add('hidden');
+          var statusEl = document.getElementById('media-proof-status');
+          var urlHidden = document.getElementById('media_proof_image_url');
+          var fileInput = document.getElementById('media_proof_file');
+          if (fileInput) fileInput.value = '';
+          if (urlHidden) urlHidden.value = '';
+          if (statusEl) {
+            statusEl.textContent = 'อัปโหลดภาพบัตรสื่อโดยตรงจากอุปกรณ์ • Upload your media ID photo from device.';
+            statusEl.style.color = '#666';
+          }
           showScreen('screen-thank');
         }
       } catch (err) {
@@ -815,6 +844,22 @@
     });
 
     document.getElementById('back-to-form').addEventListener('click', function () {
+      document.getElementById('vip-org-form').reset();
+      mediaUploadState = { path: null, url: null };
+      // รีเซ็ตสถานะ UI พิเศษกลับไปเหมือนตอนโหลดครั้งแรก
+      ['accompany_1_block','accompany_2_block','accompany_3_block','accompany_4_block','accompany_extra_note_block']
+        .forEach(function(id){ var el = document.getElementById(id); if(el) el.classList.add('hidden'); });
+      document.getElementById('media-proof-block').classList.add('hidden');
+      document.getElementById('media-page-block').classList.add('hidden');
+      var statusEl = document.getElementById('media-proof-status');
+      var urlHidden = document.getElementById('media_proof_image_url');
+      var fileInput = document.getElementById('media_proof_file');
+      if (fileInput) fileInput.value = '';
+      if (urlHidden) urlHidden.value = '';
+      if (statusEl) {
+        statusEl.textContent = 'อัปโหลดภาพบัตรสื่อโดยตรงจากอุปกรณ์ • Upload your media ID photo from device.';
+        statusEl.style.color = '#666';
+      }
       showScreen('screen-form');
     });
   </script>
