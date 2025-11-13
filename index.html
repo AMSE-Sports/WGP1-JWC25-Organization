@@ -10,7 +10,14 @@
   <script>
     const SUPABASE_URL = 'https://mhecpnqwwxspxfhdvzsc.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oZWNwbnF3d3hzcHhmaGR2enNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMDc0MjEsImV4cCI6MjA3ODU4MzQyMX0.ONaEMqU6BHuMSywE3Yvtbj78NqBbecI18amsD18Cgnc';
+
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // state สำหรับเก็บผลการอัปโหลดรูปบัตรสื่อ
+    let mediaUploadState = {
+      path: null,
+      url: null
+    };
   </script>
 
   <style>
@@ -375,10 +382,15 @@
             <input id="org_city" required pattern="[\u0E00-\u0E7F a-zA-Z\-]+" placeholder="เช่น Bangkok / Pattaya">
             <div class="note">รองรับอักษรไทย/อังกฤษและช่องว่างเท่านั้น • Thai/English letters & spaces only</div>
           </div>
+
+          <!-- Media Proof: อัปโหลดรูป (เฉพาะสื่อมวลชน) -->
           <div id="media-proof-block" class="hidden">
-            <label class="title">ลิงก์รูปบัตรสื่อ<span class="en"> / Media ID Photo URL</span></label>
-            <input id="media_proof_image_url" placeholder="เช่น ลิงก์จาก cloud / drive / storage">
-            <div class="note">อัปโหลดรูปไว้ในระบบที่ใช้ แล้ววางลิงก์ที่นี่ • Paste the image URL here.</div>
+            <label class="title">Media Proof (บัตรสื่อ)<span class="en"> / Media ID Photo</span></label>
+            <input type="file" id="media_proof_file" accept="image/*">
+            <input type="hidden" id="media_proof_image_url">
+            <div id="media-proof-status" class="note">
+              อัปโหลดภาพบัตรสื่อโดยตรงจากอุปกรณ์ • Upload your media ID photo from device.
+            </div>
           </div>
         </div>
 
@@ -629,6 +641,63 @@
       toggle();
     })();
 
+    // อัปโหลดรูปบัตรสื่อไป Supabase Storage bucket: vip_media_proofs
+    (function initMediaUpload() {
+      var fileInput = document.getElementById('media_proof_file');
+      var statusEl = document.getElementById('media-proof-status');
+      var urlHidden = document.getElementById('media_proof_image_url');
+
+      if (!fileInput) return;
+
+      fileInput.addEventListener('change', async function () {
+        var file = fileInput.files[0];
+        if (!file) return;
+
+        statusEl.textContent = 'กำลังอัปโหลดรูปภาพ... / Uploading image...';
+        statusEl.style.color = '#444';
+        mediaUploadState = { path: null, url: null };
+        urlHidden.value = '';
+
+        try {
+          var cleanName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+          var path = 'org-media/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '-' + cleanName;
+
+          const { data, error } = await sb
+            .storage
+            .from('vip_media_proofs')
+            .upload(path, file, {
+              cacheControl: '3600',
+              upsert: false
+            });
+
+          if (error) {
+            console.error('Upload error:', error);
+            statusEl.textContent = 'อัปโหลดไม่สำเร็จ กรุณาลองใหม่ • Upload failed, please try again.';
+            statusEl.style.color = '#b91c1c';
+            return;
+          }
+
+          const { data: publicData } = sb
+            .storage
+            .from('vip_media_proofs')
+            .getPublicUrl(path);
+
+          mediaUploadState = {
+            path: path,
+            url: publicData.publicUrl
+          };
+          urlHidden.value = publicData.publicUrl || '';
+
+          statusEl.textContent = 'อัปโหลดสำเร็จ ✓ • Uploaded successfully.';
+          statusEl.style.color = '#16a34a';
+        } catch (err) {
+          console.error('Unexpected upload error:', err);
+          statusEl.textContent = 'เกิดข้อผิดพลาดในการอัปโหลด กรุณาลองใหม่ • Unexpected upload error.';
+          statusEl.style.color = '#b91c1c';
+        }
+      });
+    })();
+
     // Toggle accompany blocks & extra note based on accompany_count
     (function initAccompanyToggle() {
       var sel = document.getElementById('accompany_count');
@@ -669,6 +738,13 @@
         return;
       }
 
+      // ถ้าเป็นสื่อมวลชน ต้องมีรูป Media Proof อัปโหลดแล้ว
+      var orgType = document.getElementById('org_type').value;
+      if (orgType === 'media' && !mediaUploadState.url) {
+        alert('สำหรับสื่อมวลชน กรุณาอัปโหลดรูปบัตรสื่อก่อนส่งแบบฟอร์ม • For media organizations, please upload a media ID photo before submitting.');
+        return;
+      }
+
       var btn = document.getElementById('submit-btn');
       var oldText = btn.textContent;
       btn.textContent = 'กำลังส่ง... / Submitting...';
@@ -677,12 +753,13 @@
       var payload = {
         submitted_at: new Date().toISOString(),
 
-        org_type: document.getElementById('org_type').value || null,
+        org_type: orgType || null,
         org_name_th: document.getElementById('org_name_th').value.trim() || null,
         org_name_en: document.getElementById('org_name_en').value.trim() || null,
         org_country: document.getElementById('org_country').value || null,
         org_city: document.getElementById('org_city').value.trim() || null,
-        media_proof_image_url: document.getElementById('media_proof_image_url').value.trim() || null,
+
+        media_proof_image_url: (document.getElementById('media_proof_image_url').value.trim() || mediaUploadState.url || null),
         media_page_url: document.getElementById('media_page_url').value.trim() || null,
 
         vip_title: document.getElementById('vip_title').value || null,
@@ -725,6 +802,7 @@
           alert('บันทึกข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง หรือแจ้งเจ้าหน้าที่\n\nError: ' + error.message);
         } else {
           document.getElementById('vip-org-form').reset();
+          mediaUploadState = { path: null, url: null };
           showScreen('screen-thank');
         }
       } catch (err) {
