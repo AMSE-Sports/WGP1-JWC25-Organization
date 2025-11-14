@@ -21,43 +21,99 @@
   </script>
 
   <style>
-    :root { --primary:#f37021; --border:#ececec; --ok:#16a34a; }
+    :root {
+      --primary:#f37021;
+      --border:#ececec;
+      --ok:#16a34a;
+
+      /* ขยายฟอนต์ให้ใหญ่ขึ้น */
+      --font-base:   clamp(18px, 2vw, 22px);
+      --font-label:  clamp(17px, 1.9vw, 21px);
+      --font-title:  clamp(24px, 2.6vw, 32px);
+      --font-note:   clamp(14px, 1.6vw, 18px);
+    }
+
     * { box-sizing:border-box; }
+
     body {
       margin:0;
       font-family:system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
       background:#fafafa;
       color:#111;
+      font-size:var(--font-base);
+      width:100%;
+      min-height:100vh;
     }
+
     .header { background:#000; }
     .header img { display:block; width:100%; height:auto; }
 
-    .container { max-width:960px; margin:0 auto; padding:16px; }
-    .screen { min-height:100vh; display:flex; flex-direction:column; gap:16px; }
-    .card {
-      background:#fff;
-      border:1px solid var(--border);
-      border-radius:16px;
-      overflow:hidden;
-      box-shadow:0 10px 24px -18px rgba(0,0,0,.25);
+    /* ให้ฟอร์มเต็มหน้าจอทุกอุปกรณ์ */
+    .container {
+      width:100%;
+      max-width:none;
+      margin:0;
+      padding:0;
     }
-    .head { padding:16px; border-bottom:1px solid var(--border); }
-    .body { padding:16px; }
-    .row { display:grid; grid-template-columns:1fr; gap:12px; margin-bottom:12px; }
-    @media (min-width:760px) { .row.two { grid-template-columns:1fr 1fr; } }
 
-    label.title { font-weight:800; font-size:13px; margin-bottom:6px; display:block; }
-    label .en { font-weight:600; color:#555; margin-left:2px; }
+    .screen {
+      min-height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .card {
+      width:100%;
+      background:#fff;
+      border-radius:0;
+      border:0;
+      box-shadow:none;
+    }
+
+    .head {
+      padding:24px 20px;
+      border-bottom:1px solid var(--border);
+    }
+    .head h2 {
+      margin:0;
+      font-size:var(--font-title);
+      font-weight:900;
+    }
+
+    .body { padding:24px 20px; }
+
+    .row {
+      display:grid;
+      grid-template-columns:1fr;
+      gap:16px;
+      margin-bottom:16px;
+    }
+    @media (min-width:760px) {
+      .row.two { grid-template-columns:1fr 1fr; }
+    }
+
+    label.title {
+      font-weight:800;
+      font-size:var(--font-label);
+      margin-bottom:6px;
+      display:block;
+    }
+    label .en {
+      font-weight:600;
+      color:#555;
+      margin-left:4px;
+      font-size:calc(var(--font-label) - 1px);
+    }
 
     input, select, textarea {
       width:100%;
-      padding:10px 12px;
-      border-radius:12px;
+      padding:14px 16px;
+      border-radius:14px;
       border:1px solid var(--border);
       outline:none;
       background:#fff;
       font-family:inherit;
-      font-size:14px;
+      font-size:var(--font-base);
       resize:vertical;
     }
     input:focus, select:focus, textarea:focus {
@@ -71,21 +127,35 @@
       justify-content:center;
       font-weight:800;
       border:0;
-      padding:14px 20px;
+      padding:18px 24px;
       border-radius:16px;
       cursor:pointer;
+      font-size:var(--font-base);
     }
-    .btn.primary { background:var(--primary); color:#fff; box-shadow:0 10px 24px -16px rgba(243,112,33,.85); }
+    .btn.primary {
+      background:var(--primary);
+      color:#fff;
+      box-shadow:0 10px 24px -16px rgba(243,112,33,.85);
+    }
     .btn.dark { background:#111; color:#fff; }
-    .btn.wide { width:100%; font-size:16px; }
+    .btn.wide { width:100%; }
 
-    .note { color:#666; font-size:12px; }
-    .hidden { display:none; }
+    .note {
+      color:#666;
+      font-size:var(--font-note);
+    }
 
-    .footer { padding:16px; text-align:center; color:#666; font-size:12px; }
+    .hidden { display:none !important; }
+
+    .footer {
+      padding:12px 16px;
+      text-align:center;
+      color:#666;
+      font-size:var(--font-note);
+    }
 
     .thankfull {
-      min-height:60vh;
+      min-height:100vh;
       display:flex;
       flex-direction:column;
       justify-content:center;
@@ -93,39 +163,137 @@
       text-align:center;
       color:#fff;
       background:linear-gradient(135deg, #f37021, #ff8c4a);
-      padding:40px 20px;
+      padding:60px 20px;
     }
     .thankfull h2 {
-      font-size:40px;
+      font-size:clamp(32px, 5vw, 60px);
       font-weight:900;
       letter-spacing:1px;
-      margin-bottom:18px;
+      margin-bottom:24px;
       text-shadow:0 4px 20px rgba(0,0,0,0.35);
     }
     .thankfull p {
       max-width:720px;
-      font-size:18px;
+      font-size:clamp(18px, 2.2vw, 24px);
       line-height:1.6;
       font-weight:500;
       text-shadow:0 2px 10px rgba(0,0,0,0.25);
     }
 
-    .consent-desc { line-height:1.55; margin-bottom:10px; }
-    label.consent-check { display:flex; gap:8px; align-items:center; }
-    label.consent-check input[type="checkbox"] {
-      margin-top:0;
-      flex:0 0 auto;
-    }
-    label.consent-check span { flex:1 1 auto; }
+    .consent-desc { margin-bottom:10px; }
 
-    input[type="checkbox"], input[type="radio"] { width:auto; }
-    .inline-checks { display:flex; flex-wrap:wrap; gap:8px 16px; }
-    .inline-checks label { display:flex; align-items:center; gap:6px; font-size:13px; }
+    input[type="checkbox"],
+    input[type="radio"] {
+      width:auto;
+      accent-color:var(--primary);
+    }
+
+    /* Consent checkbox 2 บรรทัด + ขนาดพอ ๆ กับตัวหนังสือ */
+    label.consent-check {
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      font-size:var(--font-base);
+      margin-top:8px;
+    }
+    label.consent-check input[type="checkbox"] {
+      flex:0 0 auto;
+      width:1.25em;
+      height:1.25em;
+      margin-top:0.25em;
+    }
+    label.consent-check span {
+      flex:1 1 auto;
+      line-height:1.5;
+    }
+
+    .inline-checks {
+      display:flex;
+      flex-wrap:wrap;
+      gap:8px 16px;
+      font-size:var(--font-base);
+    }
+    .inline-checks label {
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
+
     .section-title {
-      font-weight:800; font-size:14px; margin:8px 0;
-      padding:6px 10px; border-radius:10px;
-      background:#fff7f1; border:1px solid #ffe0c4;
+      font-weight:800;
+      font-size:var(--font-label);
+      margin:8px 0;
+      padding:6px 10px;
+      border-radius:10px;
+      background:#fff7f1;
+      border:1px solid #ffe0c4;
       color:#b45309;
+    }
+
+    /* ปุ่มอ่านรายละเอียด */
+    .link-btn {
+      border:0;
+      background:none;
+      padding:0;
+      margin-left:6px;
+      color:var(--primary);
+      cursor:pointer;
+      text-decoration:underline;
+      font-size:var(--font-note);
+      font-weight:600;
+    }
+
+    /* Modal แสดงรายละเอียด Consent (PDPA + Media) */
+    .modal {
+      position:fixed;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:50;
+    }
+    .modal-backdrop {
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,0.55);
+    }
+    .modal-content {
+      position:relative;
+      max-width:900px;
+      max-height:80vh;
+      width:90%;
+      background:#fff;
+      border-radius:18px;
+      padding:24px 20px;
+      box-shadow:0 18px 40px rgba(0,0,0,0.4);
+      overflow:auto;
+      font-size:var(--font-base);
+    }
+    .modal-content h3 {
+      margin-top:0;
+      margin-bottom:10px;
+      font-size:clamp(20px, 2.4vw, 26px);
+      font-weight:800;
+    }
+    .modal-content h4 {
+      margin-top:16px;
+      margin-bottom:6px;
+      font-size:clamp(17px, 2.1vw, 22px);
+      font-weight:700;
+    }
+    .modal-content p {
+      margin:4px 0 10px;
+      line-height:1.6;
+    }
+    .modal-close {
+      position:absolute;
+      top:10px;
+      right:12px;
+      border:0;
+      background:transparent;
+      font-size:28px;
+      line-height:1;
+      cursor:pointer;
     }
   </style>
 </head>
@@ -139,7 +307,7 @@
   <section id="screen-form" class="screen container">
     <div class="card">
       <div class="head">
-        <h2 style="margin:0;">Event Participate Form for Organization</h2>
+        <h2>Event Participate Form for Organization</h2>
         <p class="note" style="margin:4px 0 0;">
           แบบฟอร์มลงทะเบียนหน่วยงาน / องค์กร สำหรับเข้าร่วมงาน WGP#1 Waterjet World Cup 2025
         </p>
@@ -380,7 +548,10 @@
         <div class="row two">
           <div>
             <label class="title">เมืองของหน่วยงาน<span class="en"> / City</span> *</label>
-            <input id="org_city" required pattern="[\u0E00-\u0E7F a-zA-Z\-]+" placeholder="เช่น Bangkok / Pattaya">
+            <input id="org_city"
+                   required
+                   pattern="[\u0E00-\u0E7F a-zA-Z\- ]+"
+                   placeholder="เช่น Bangkok / Pattaya">
             <div class="note">รองรับอักษรไทย/อังกฤษและช่องว่างเท่านั้น • Thai/English letters & spaces only</div>
           </div>
 
@@ -564,30 +735,42 @@
         <!-- F. PDPA & Media Consent -->
         <div class="section-title">F. PDPA & Media Consent</div>
 
+        <!-- PDPA -->
         <div class="row">
           <div>
             <label class="title">การจัดเก็บและใช้ข้อมูลส่วนบุคคล<span class="en"> / PDPA Consent</span> *</label>
-            <div class="consent-desc">
-              ข้อมูลที่กรอกในแบบฟอร์มนี้จะถูกใช้เพื่อการจัดการงาน ที่นั่ง พิธีการ และการติดต่อประสานงานเกี่ยวกับงาน WGP#1 Waterjet World Cup 2025 เท่านั้น และจะไม่ถูกนำไปใช้เพื่อวัตถุประสงค์อื่นโดยไม่ได้รับความยินยอม
+            <div class="note">
+              โปรดอ่านรายละเอียดนโยบายข้อมูลส่วนบุคคลก่อนทำเครื่องหมายยินยอม
+              <button type="button" class="link-btn" id="open-consent-modal">
+                อ่านรายละเอียด / Read more
+              </button>
             </div>
             <label class="consent-check">
               <input type="checkbox" id="pdpa_consent" required>
-              <span>ฉันได้อ่านและยินยอมให้จัดเก็บและใช้ข้อมูลส่วนบุคคลตามที่ระบุไว้ข้างต้น • I have read and consent to the use of my personal data as stated above.</span>
+              <span>
+                ฉันได้อ่านและยินยอมให้จัดเก็บและใช้ข้อมูลส่วนบุคคลตามที่ระบุไว้ในนโยบาย<br>
+                I have read and consent to the use of my personal data as stated in the policy.
+              </span>
             </label>
           </div>
         </div>
 
+        <!-- Media -->
         <div class="row">
           <div>
             <label class="title">การบันทึกภาพและวิดีโอ<span class="en"> / Media (Photo & Video) Consent</span> *</label>
-            <div class="consent-desc">
-              <strong>EN:</strong> By attending the WGP#1 Waterjet World Cup 2025, which includes live broadcasting and global media coverage, you grant the event organizers and their partners the right to photograph, film, and record your image and voice for use in promotions, advertising, live streams, and other media—without the need for further consent or compensation. Entering the event area constitutes full and unconditional consent. If you do not wish to appear in such media, please avoid camera zones or broadcast areas.
-              <br><br>
-              <strong>TH:</strong> ในการเข้าชมการแข่งขัน WGP#1 Waterjet World Cup 2025 ซึ่งมีการถ่ายทอดสดและเผยแพร่สู่สาธารณะทั่วโลก ท่านยินยอมให้ผู้จัดงานและพันธมิตร สามารถบันทึกภาพนิ่ง วิดีโอ และเสียงของท่าน เพื่อใช้ในสื่อประชาสัมพันธ์ โฆษณา ถ่ายทอดสด และสื่ออื่น ๆ โดยไม่ต้องขออนุญาตหรือจ่ายค่าตอบแทนใด ๆ เพิ่มเติม การเข้าสู่พื้นที่จัดงาน ถือเป็นการให้ความยินยอมโดยสมบูรณ์ หากไม่ประสงค์ให้ถูกบันทึกภาพ โปรดหลีกเลี่ยงบริเวณกล้องหรือพื้นที่ถ่ายทอดสด
+            <div class="note">
+              โปรดอ่านรายละเอียดเกี่ยวกับการบันทึกภาพ/วิดีโอก่อนทำเครื่องหมายยินยอม
+              <button type="button" class="link-btn" id="open-consent-modal-2">
+                อ่านรายละเอียด / Read more
+              </button>
             </div>
             <label class="consent-check">
               <input type="checkbox" id="media_consent" required>
-              <span>ฉันได้อ่านและยินยอมตามเงื่อนไขการบันทึกภาพและวิดีโอข้างต้น • I have read and consent to the media conditions above.</span>
+              <span>
+                ฉันได้อ่านและยินยอมตามเงื่อนไขการบันทึกภาพและวิดีโอข้างต้น<br>
+                I have read and consent to the media recording conditions above.
+              </span>
             </label>
           </div>
         </div>
@@ -618,6 +801,46 @@
       </div>
     </div>
   </section>
+
+  <!-- MODAL: PDPA & MEDIA CONSENT DETAILS -->
+  <div id="consent-modal" class="modal hidden">
+    <div id="consent-modal-backdrop" class="modal-backdrop"></div>
+    <div class="modal-content">
+      <button type="button" class="modal-close" id="close-consent-modal">&times;</button>
+      <h3>Consent Details</h3>
+
+      <h4>TH: การจัดเก็บและใช้ข้อมูลส่วนบุคคล (PDPA)</h4>
+      <p>
+        ข้อมูลที่กรอกในแบบฟอร์มนี้จะถูกใช้เพื่อการจัดการงาน ที่นั่ง พิธีการ และการติดต่อประสานงานเกี่ยวกับงาน
+        WGP#1 Waterjet World Cup 2025 เท่านั้น และจะไม่ถูกนำไปใช้เพื่อวัตถุประสงค์อื่นโดยไม่ได้รับความยินยอม
+        ทั้งนี้ ผู้จัดงานจะดำเนินการเก็บรักษาข้อมูลตามมาตรการความปลอดภัยที่เหมาะสม
+      </p>
+
+      <h4>EN: Personal Data (PDPA)</h4>
+      <p>
+        The information provided in this form will be used solely for event logistics, seating arrangements, protocol,
+        and communications related to the WGP#1 Waterjet World Cup 2025, and will not be used for other purposes
+        without your consent. The organizers will apply appropriate security measures to protect your personal data.
+      </p>
+
+      <h4>EN: Media (Photo & Video)</h4>
+      <p>
+        By attending the WGP#1 Waterjet World Cup 2025, which includes live broadcasting and global media coverage,
+        you grant the event organizers and their partners the right to photograph, film, and record your image and voice
+        for use in promotions, advertising, live streams, and other media—without the need for further consent or
+        compensation. Entering the event area constitutes full and unconditional consent. If you do not wish to appear
+        in such media, please avoid camera zones or broadcast areas.
+      </p>
+
+      <h4>TH: การบันทึกภาพและวิดีโอ</h4>
+      <p>
+        ในการเข้าชมการแข่งขัน WGP#1 Waterjet World Cup 2025 ซึ่งมีการถ่ายทอดสดและเผยแพร่สู่สาธารณะทั่วโลก
+        ท่านยินยอมให้ผู้จัดงานและพันธมิตร สามารถบันทึกภาพนิ่ง วิดีโอ และเสียงของท่าน เพื่อใช้ในสื่อประชาสัมพันธ์
+        โฆษณา ถ่ายทอดสด และสื่ออื่น ๆ โดยไม่ต้องขออนุญาตหรือจ่ายค่าตอบแทนใด ๆ เพิ่มเติม การเข้าสู่พื้นที่จัดงาน
+        ถือเป็นการให้ความยินยอมโดยสมบูรณ์ หากไม่ประสงค์ให้ถูกบันทึกภาพ โปรดหลีกเลี่ยงบริเวณกล้องหรือพื้นที่ถ่ายทอดสด
+      </p>
+    </div>
+  </div>
 
   <script>
     function showScreen(id) {
@@ -736,6 +959,25 @@
       }
       sel.addEventListener('change', toggle);
       toggle();
+    })();
+
+    // Modal: PDPA & Media details
+    (function(){
+      const modal    = document.getElementById('consent-modal');
+      const openBtn1 = document.getElementById('open-consent-modal');
+      const openBtn2 = document.getElementById('open-consent-modal-2');
+      const closeBtn = document.getElementById('close-consent-modal');
+      const backdrop = document.getElementById('consent-modal-backdrop');
+
+      if (!modal || !openBtn1 || !openBtn2 || !closeBtn || !backdrop) return;
+
+      function openModal(){ modal.classList.remove('hidden'); }
+      function closeModal(){ modal.classList.add('hidden'); }
+
+      openBtn1.addEventListener('click', openModal);
+      openBtn2.addEventListener('click', openModal);
+      closeBtn.addEventListener('click', closeModal);
+      backdrop.addEventListener('click', closeModal);
     })();
 
     // Form submit -> Supabase insert
