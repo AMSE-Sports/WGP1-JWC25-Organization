@@ -373,27 +373,19 @@
             </select>
           </div>
           <div>
-            <label class="title">ชื่อ (TH)<span class="en"> / First Name (TH)</span> *</label>
-            <input id="vip_firstname_th" required>
+            <label class="title">ชื่อจริง (TH/EN)<span class="en"> / First Name (TH/EN)</span> *</label>
+            <input id="vip_firstname_th" required placeholder="กรอกชื่อจริง (TH/EN) / First Name">
           </div>
         </div>
 
-        <div class="row two">
+        <div class="row">
           <div>
-            <label class="title">นามสกุล (TH)<span class="en"> / Last Name (TH)</span> *</label>
-            <input id="vip_lastname_th" required>
-          </div>
-          <div>
-            <label class="title">First Name (EN)</label>
-            <input id="vip_firstname_en" placeholder="สำหรับใช้ในเอกสารภาษาอังกฤษ / if needed">
+            <label class="title">นามสกุล (TH/EN)<span class="en"> / Last Name (TH/EN)</span> *</label>
+            <input id="vip_lastname_th" required placeholder="กรอกนามสกุล (TH/EN) / Last Name">
           </div>
         </div>
 
-        <div class="row two">
-          <div>
-            <label class="title">Last Name (EN)</label>
-            <input id="vip_lastname_en" placeholder="สำหรับใช้ในเอกสารภาษาอังกฤษ / if needed">
-          </div>
+        <div class="row">
           <div>
             <label class="title">ตำแหน่ง<span class="en"> / Position / Role</span> *</label>
             <input id="vip_position" required placeholder="เช่น CEO, President of ..., Director of Sport ...">
@@ -800,8 +792,6 @@
         vip_title: document.getElementById('vip_title').value || null,
         vip_firstname_th: document.getElementById('vip_firstname_th').value.trim() || null,
         vip_lastname_th: document.getElementById('vip_lastname_th').value.trim() || null,
-        vip_firstname_en: document.getElementById('vip_firstname_en').value.trim() || null,
-        vip_lastname_en: document.getElementById('vip_lastname_en').value.trim() || null,
         vip_position: document.getElementById('vip_position').value.trim() || null,
 
         contact_phone: document.getElementById('contact_phone').value.trim() || null,
