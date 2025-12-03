@@ -102,6 +102,39 @@
     .hidden { display:none!important; }
     .footer { padding:20px; text-align:center; color:#666; }
 
+    /* กล่องข้อความ Consent แบบเต็ม */
+.consent-box {
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #fff7f1;
+  border: 1px solid #fed7aa;
+  font-size: var(--font-base);
+  line-height: 1.6;
+  color: #444;
+}
+
+/* แถว checkbox ให้ตกกับข้อความสวย ๆ */
+.consent-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 10px;
+  font-size: var(--font-base);
+}
+
+.consent-check input[type="checkbox"] {
+  flex: 0 0 auto;
+  width: 1.4em;
+  height: 1.4em;
+  margin-top: 0.25em;
+  accent-color: var(--primary);
+}
+
+.consent-check span {
+  flex: 1 1 auto;
+  line-height: 1.5;
+}
+
     /* THANK YOU PAGE */
     .thankfull {
       min-height:80vh;
@@ -171,21 +204,49 @@
         </div>
       </div>
 
-      <div class="section-title">C. Consent</div>
+     <div class="section-title">C. Consent</div>
 
-      <div class="row">
-        <p class="note" style="line-height:1.55;">
-          ในการเข้าร่วมงาน WGP#1 Waterjet World Cup 2025 ซึ่งมีการถ่ายทอดสดและเผยแพร่สู่สาธารณะทั่วโลก
-          ท่านยินยอมให้ผู้จัดงานบันทึกภาพนิ่ง วิดีโอ และเสียงของท่านเพื่อใช้ในสื่อประชาสัมพันธ์ โฆษณา ถ่ายทอดสด
-          และการเผยแพร่ในช่องทางต่าง ๆ โดยไม่ต้องขออนุญาตเพิ่มเติม หรือจ่ายค่าตอบแทนใด ๆ<br><br>
-          By attending the event, you grant full consent for photography, video, and media usage for broadcasting,
-          promotions, advertising, and live streaming.
-        </p>
-        <label>
-          <input type="checkbox" id="media_consent" required>
-          &nbsp;ฉันยอมรับ / I agree *
-        </label>
-      </div>
+<div class="row">
+  <div>
+    <div class="consent-box">
+      <strong>TH: การจัดเก็บและใช้ข้อมูลส่วนบุคคล และการบันทึกภาพ/วิดีโอ</strong>
+      <p>
+        ข้อมูลที่กรอกในแบบฟอร์มนี้จะถูกใช้เพื่อการจัดการงาน การออกบัตรสื่อ การติดต่อประสานงาน 
+        และการดูแลความปลอดภัยภายในงาน WGP#1 Waterjet World Cup 2025 เท่านั้น 
+        ข้อมูลจะไม่ถูกนำไปใช้เพื่อวัตถุประสงค์อื่นโดยไม่ได้รับความยินยอมเพิ่มเติม 
+        และผู้จัดงานจะดำเนินการเก็บรักษาข้อมูลตามมาตรการความปลอดภัยที่เหมาะสม
+      </p>
+      <p>
+        นอกจากนี้ การเข้าร่วมงานซึ่งมีการถ่ายทอดสดและเผยแพร่สู่สาธารณะทั่วโลก 
+        ถือเป็นการยินยอมให้ผู้จัดงานและพันธมิตร สามารถบันทึกภาพนิ่ง วิดีโอ และเสียงของท่าน 
+        เพื่อนำไปใช้ในสื่อประชาสัมพันธ์ โฆษณา ถ่ายทอดสด คลิปสรุปงาน และสื่ออื่น ๆ ที่เกี่ยวข้อง 
+        โดยไม่ต้องขออนุญาตเป็นรายครั้ง หรือจ่ายค่าตอบแทนใด ๆ เพิ่มเติม
+      </p>
+
+      <strong>EN: Personal Data & Media (Photo & Video)</strong>
+      <p>
+        The information you provide in this form will be used solely for event management, 
+        media accreditation, coordination, and safety purposes related to the 
+        WGP#1 Waterjet World Cup 2025. It will not be used for other purposes without your further consent, 
+        and appropriate security measures will be applied to protect your data.
+      </p>
+      <p>
+        By attending the event, you grant the organizers and their partners full consent to photograph, film, 
+        and record your image and voice for broadcasting, promotions, advertising, live streaming, 
+        highlight clips, and other related media, without the need for additional permission 
+        or compensation on a case-by-case basis.
+      </p>
+    </div>
+
+    <label class="consent-check">
+      <input type="checkbox" id="media_consent" required>
+      <span>
+        ฉันได้อ่านและยินยอมตามเงื่อนไขการใช้ข้อมูลและการบันทึกภาพ/วิดีโอข้างต้น<br>
+        I have read and agree to the above personal data and media conditions. *
+      </span>
+    </label>
+  </div>
+</div>
 
       <button class="btn primary" type="submit" id="submit-btn">
         ส่งแบบฟอร์ม • Submit
