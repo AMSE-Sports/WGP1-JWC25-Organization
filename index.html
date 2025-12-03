@@ -3,873 +3,280 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Event Participate Form for Organization • WGP#1</title>
+  <title>Media Registration • WGP#1</title>
 
-  <!-- Supabase JS Client -->
+  <!-- Supabase -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.48.0/dist/umd/supabase.js"></script>
   <script>
     const SUPABASE_URL = 'https://mhecpnqwwxspxfhdvzsc.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oZWNwbnF3d3hzcHhmaGR2enNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMDc0MjEsImV4cCI6MjA3ODU4MzQyMX0.ONaEMqU6BHuMSywE3Yvtbj78NqBbecI18amsD18Cgnc';
+    const SUPABASE_ANON_KEY =
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1oZWNwbnF3d3hzcHhmaGR2enNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjMwMDc0MjEsImV4cCI6MjA3ODU4MzQyMX0.ONaEMqU6BHuMSywE3Yvtbj78NqBbecI18amsD18Cgnc';
 
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // state สำหรับเก็บผลการอัปโหลดรูปบัตรสื่อ
-    let mediaUploadState = {
-      path: null,
-      url: null
-    };
+    let mediaUploadState = { path:null, url:null };
   </script>
 
   <style>
     :root {
       --primary:#f37021;
-      --border:#ececec;
-      --ok:#16a34a;
-
-      /* ขยายฟอนต์ให้ใหญ่ขึ้น */
-      --font-base:   clamp(18px, 2vw, 22px);
-      --font-label:  clamp(17px, 1.9vw, 21px);
-      --font-title:  clamp(24px, 2.6vw, 32px);
-      --font-note:   clamp(14px, 1.6vw, 18px);
+      --border:#e5e7eb;
+      --font-base:clamp(18px, 2vw, 22px);
+      --font-label:clamp(17px, 1.8vw, 20px);
+      --font-title:clamp(26px, 3vw, 34px);
     }
 
     * { box-sizing:border-box; }
 
     body {
-      margin:0;
-      font-family:system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif;
+      margin:0; padding:0;
+      font-family:system-ui, -apple-system, Segoe UI, Roboto, Inter, sans-serif;
       background:#fafafa;
       color:#111;
       font-size:var(--font-base);
-      width:100%;
-      min-height:100vh;
     }
 
-    .header { background:#000; }
-    .header img { display:block; width:100%; height:auto; }
+    .header img { width:100%; display:block; }
 
-    /* ให้ฟอร์มเต็มหน้าจอทุกอุปกรณ์ */
-    .container {
-      width:100%;
-      max-width:none;
-      margin:0;
-      padding:0;
-    }
-
-    .screen {
-      min-height:100vh;
-      display:flex;
-      flex-direction:column;
-    }
-
-    .card {
-      width:100%;
-      background:#fff;
-      border-radius:0;
-      border:0;
-      box-shadow:none;
-    }
+    .card { background:#fff; width:100%; }
 
     .head {
-      padding:24px 20px;
+      padding:20px;
       border-bottom:1px solid var(--border);
     }
-    .head h2 {
-      margin:0;
-      font-size:var(--font-title);
-      font-weight:900;
-    }
+    .head h2 { margin:0; font-size:var(--font-title); font-weight:900; }
 
-    .body { padding:24px 20px; }
-
-    .row {
-      display:grid;
-      grid-template-columns:1fr;
-      gap:16px;
-      margin-bottom:16px;
-    }
-    @media (min-width:760px) {
-      .row.two { grid-template-columns:1fr 1fr; }
-    }
+    .body { padding:20px; }
 
     label.title {
       font-weight:800;
       font-size:var(--font-label);
-      margin-bottom:6px;
       display:block;
-    }
-    label .en {
-      font-weight:600;
-      color:#555;
-      margin-left:4px;
-      font-size:calc(var(--font-label) - 1px);
+      margin-bottom:6px;
     }
 
-    input, select, textarea {
+    input, select {
       width:100%;
       padding:14px 16px;
-      border-radius:14px;
+      border-radius:12px;
       border:1px solid var(--border);
-      outline:none;
-      background:#fff;
-      font-family:inherit;
       font-size:var(--font-base);
-      resize:vertical;
+      background:#fff;
     }
-    input:focus, select:focus, textarea:focus {
+    input:focus {
       border-color:var(--primary);
       box-shadow:0 0 0 3px rgba(243,112,33,.2);
+      outline:none;
+    }
+
+    .row { display:grid; gap:16px; margin-bottom:16px; }
+    @media(min-width:760px){
+      .row.two { grid-template-columns:1fr 1fr; }
+    }
+
+    .note { color:#666; font-size:clamp(14px,1.4vw,18px); }
+
+    .section-title {
+      margin:10px 0;
+      padding:8px 14px;
+      background:#fff7f1;
+      border:1px solid #ffddc1;
+      border-radius:10px;
+      color:#b45309;
+      font-weight:800;
+      font-size:var(--font-label);
     }
 
     .btn {
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      font-weight:800;
+      width:100%;
+      padding:16px;
       border:0;
-      padding:18px 24px;
-      border-radius:16px;
-      cursor:pointer;
+      border-radius:14px;
       font-size:var(--font-base);
+      font-weight:800;
+      cursor:pointer;
+      margin-top:10px;
     }
-    .btn.primary {
-      background:var(--primary);
-      color:#fff;
-      box-shadow:0 10px 24px -16px rgba(243,112,33,.85);
-    }
-    .btn.dark { background:#111; color:#fff; }
-    .btn.wide { width:100%; }
+    .btn.primary { background:var(--primary); color:white; }
 
-    .note {
-      color:#666;
-      font-size:var(--font-note);
-    }
+    .hidden { display:none!important; }
+    .footer { padding:20px; text-align:center; color:#666; }
 
-    .hidden { display:none !important; }
-
-    .footer {
-      padding:12px 16px;
-      text-align:center;
-      color:#666;
-      font-size:var(--font-note);
-    }
-
+    /* THANK YOU PAGE */
     .thankfull {
-      min-height:100vh;
-      display:flex;
+      min-height:80vh;
+      display:flex; align-items:center; justify-content:center;
       flex-direction:column;
-      justify-content:center;
-      align-items:center;
-      text-align:center;
-      color:#fff;
-      background:linear-gradient(135deg, #f37021, #ff8c4a);
-      padding:60px 20px;
+      color:white; text-align:center;
+      padding:20px;
+      background:linear-gradient(135deg,#f37021,#ff8c4a);
     }
-    .thankfull h2 {
-      font-size:clamp(32px, 5vw, 60px);
-      font-weight:900;
-      letter-spacing:1px;
-      margin-bottom:24px;
-      text-shadow:0 4px 20px rgba(0,0,0,0.35);
-    }
-    .thankfull p {
-      max-width:720px;
-      font-size:clamp(18px, 2.2vw, 24px);
-      line-height:1.6;
-      font-weight:500;
-      text-shadow:0 2px 10px rgba(0,0,0,0.25);
-    }
-
-    .consent-desc { margin-bottom:10px; }
-
-    input[type="checkbox"],
-    input[type="radio"] {
-      width:auto;
-      accent-color:var(--primary);
-    }
-
-    /* Consent checkbox 2 บรรทัด + ขนาดพอ ๆ กับตัวหนังสือ */
-    label.consent-check {
-      display:flex;
-      gap:10px;
-      align-items:flex-start;
-      font-size:var(--font-base);
-      margin-top:8px;
-    }
-    label.consent-check input[type="checkbox"] {
-      flex:0 0 auto;
-      width:1.25em;
-      height:1.25em;
-      margin-top:0.25em;
-    }
-    label.consent-check span {
-      flex:1 1 auto;
-      line-height:1.5;
-    }
-
-    .inline-checks {
-      display:flex;
-      flex-wrap:wrap;
-      gap:8px 16px;
-      font-size:var(--font-base);
-    }
-    .inline-checks label {
-      display:flex;
-      align-items:center;
-      gap:6px;
-    }
-    /* ขยาย checkbox ของวันเข้าร่วมประมาณ 30% */
-    .inline-checks input[type="checkbox"] {
-      width:1.6em;
-      height:1.6em;
-    }
-
-    .section-title {
-      font-weight:800;
-      font-size:var(--font-label);
-      margin:8px 0;
-      padding:6px 10px;
-      border-radius:10px;
-      background:#fff7f1;
-      border:1px solid #ffe0c4;
-      color:#b45309;
-    }
-
-    /* ปุ่มอ่านรายละเอียด */
-    .link-btn {
-      border:0;
-      background:none;
-      padding:0;
-      margin-left:6px;
-      color:var(--primary);
-      cursor:pointer;
-      text-decoration:underline;
-      font-size:var(--font-note);
-      font-weight:600;
-    }
-
-    /* Modal แสดงรายละเอียด Consent (PDPA + Media) */
-    .modal {
-      position:fixed;
-      inset:0;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      z-index:50;
-    }
-    .modal-backdrop {
-      position:absolute;
-      inset:0;
-      background:rgba(0,0,0,0.55);
-    }
-    .modal-content {
-      position:relative;
-      max-width:900px;
-      max-height:80vh;
-      width:90%;
-      background:#fff;
-      border-radius:18px;
-      padding:24px 20px;
-      box-shadow:0 18px 40px rgba(0,0,0,0.4);
-      overflow:auto;
-      font-size:var(--font-base);
-    }
-    .modal-content h3 {
-      margin-top:0;
-      margin-bottom:10px;
-      font-size:clamp(20px, 2.4vw, 26px);
-      font-weight:800;
-    }
-    .modal-content h4 {
-      margin-top:16px;
-      margin-bottom:6px;
-      font-size:clamp(17px, 2.1vw, 22px);
-      font-weight:700;
-    }
-    .modal-content p {
-      margin:4px 0 10px;
-      line-height:1.6;
-    }
-    .modal-close {
-      position:absolute;
-      top:10px;
-      right:12px;
-      border:0;
-      background:transparent;
-      font-size:28px;
-      line-height:1;
-      cursor:pointer;
-    }
+    .thankfull h2 { font-size:clamp(34px,4vw,60px); margin-bottom:14px; }
+    .thankfull p { max-width:700px; line-height:1.5; font-size:clamp(18px,2vw,24px); }
   </style>
 </head>
+
 <body>
-  <!-- Header image -->
-  <div class="header">
-    <img src="Header.png" alt="WGP#1 Waterjet World Cup 2025 Header">
-  </div>
+  <!-- HEADER -->
+  <div class="header"><img src="Header.png"></div>
 
-  <!-- SCREEN 1: FORM -->
-  <section id="screen-form" class="screen container">
-    <div class="card">
-      <div class="head">
-        <h2>Event Participate Form for Organization</h2>
-        <p class="note" style="margin:4px 0 0;">
-          แบบฟอร์มลงทะเบียนหน่วยงาน / องค์กร สำหรับเข้าร่วมงาน WGP#1 Waterjet World Cup 2025
-        </p>
-      </div>
-
-      <form class="body" id="vip-org-form">
-        <!-- A. Organization Info -->
-        <div class="section-title">A. ข้อมูลหน่วยงาน / Organization Info</div>
-
-        <div class="row two">
-          <div>
-            <label class="title">ประเภทหน่วยงาน<span class="en"> / Organization Type</span> *</label>
-            <select id="org_type" required>
-              <option value="">— เลือกประเภท / Select —</option>
-              <option value="government">ภาครัฐ / Government</option>
-              <option value="private">ภาคเอกชน / Private Company</option>
-              <option value="sports_association">สมาคมกีฬา / Sports Association</option>
-              <option value="media">สื่อมวลชน / Media</option>
-              <option value="sponsor">สปอนเซอร์ / Sponsor</option>
-              <option value="international_org">องค์กรระหว่างประเทศ / International Organization</option>
-            </select>
-          </div>
-          <div>
-            <label class="title">ชื่อหน่วยงาน<span class="en"> / Organization Name (TH/EN)</span> *</label>
-            <input id="org_name" required placeholder="เช่น การกีฬาแห่งประเทศไทย / Sports Authority of Thailand">
-          </div>
-        </div>
-
-        <!-- Media Proof -->
-        <div class="row">
-          <div id="media-proof-block" class="hidden">
-            <label class="title">Media Proof (บัตรสื่อ)<span class="en"> / Media ID Photo</span></label>
-            <input type="file" id="media_proof_file" accept="image/*">
-            <input type="hidden" id="media_proof_image_url">
-            <div id="media-proof-status" class="note">
-              อัปโหลดภาพบัตรสื่อโดยตรงจากอุปกรณ์ • Upload your media ID photo from device.
-            </div>
-          </div>
-        </div>
-
-        <!-- B. Primary Guest -->
-        <div class="section-title">B. ข้อมูลแขกหลัก / Primary Guest</div>
-
-        <div class="row two">
-          <div>
-            <label class="title">คำนำหน้า<span class="en"> / Title</span> *</label>
-            <select id="vip_title" required>
-              <option value="">— เลือก / Select —</option>
-              <option>Mr.</option>
-              <option>Ms.</option>
-              <option>Mrs.</option>
-              <option>Dr.</option>
-              <option>Prof.</option>
-              <option>H.E.</option>
-              <option>คุณ</option>
-              <option>ดร.</option>
-              <option>ศ.ดร.</option>
-            </select>
-          </div>
-          <div>
-            <label class="title">ชื่อจริง (TH/EN)<span class="en"> / First Name (TH/EN)</span> *</label>
-            <input id="vip_firstname_th" required placeholder="กรอกชื่อจริง (TH/EN) / First Name">
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label class="title">นามสกุล (TH/EN)<span class="en"> / Last Name (TH/EN)</span> *</label>
-            <input id="vip_lastname_th" required placeholder="กรอกนามสกุล (TH/EN) / Last Name">
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label class="title">ตำแหน่ง<span class="en"> / Position / Role</span> *</label>
-            <input id="vip_position" required placeholder="เช่น CEO, President of ..., Director of Sport ...">
-          </div>
-        </div>
-
-        <div class="row">
-          <div>
-            <label class="title">เบอร์ติดต่อ (Mobile / WhatsApp) *</label>
-            <input id="contact_phone" required placeholder="+66 ... / +...">
-          </div>
-        </div>
-
-        <!-- C. Contact Info -->
-        <div class="section-title">C. ข้อมูลติดต่อ / Contact Info</div>
-
-        <div class="row">
-          <div>
-            <label class="title">ชื่อผู้ประสานงาน (ถ้าคนละคนกับแขกหลัก)<span class="en"> / Contact Person</span></label>
-            <input id="contact_person_name" placeholder="ชื่อ–นามสกุล ผู้ประสานงาน">
-          </div>
-        </div>
-
-        <div class="row two">
-          <div>
-            <label class="title">ตำแหน่งผู้ประสานงาน<span class="en"> / Contact Person Position</span></label>
-            <input id="contact_person_position" placeholder="เช่น Assistant, Coordinator">
-          </div>
-          <div>
-            <label class="title">เบอร์ผู้ประสานงาน<span class="en"> / Contact Person Phone</span></label>
-            <input id="contact_person_phone" placeholder="+66 ... / +...">
-          </div>
-        </div>
-
-        <!-- D. Accompanying Guests -->
-        <div class="section-title">D. ผู้ติดตาม / Accompanying Guests</div>
-
-        <div class="row two">
-          <div>
-            <label class="title">จำนวนผู้ติดตาม<span class="en"> / Number of Accompanying Guests</span> *</label>
-            <select id="accompany_count" required>
-              <option value="0">0</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4+</option>
-            </select>
-          </div>
-        </div>
-
-        <div id="accompany_1_block" class="row hidden">
-          <div>
-            <label class="title">ผู้ติดตามคนที่ 1<span class="en"> / Accompanying Guest 1</span></label>
-            <input id="accompany_1_name" placeholder="ชื่อ–นามสกุล / Full Name">
-          </div>
-          <div>
-            <label class="title">ตำแหน่ง / ความสัมพันธ์<span class="en"> / Role / Relation</span></label>
-            <input id="accompany_1_role" placeholder="เช่น Assistant, Staff, Friend">
-          </div>
-        </div>
-
-        <div id="accompany_2_block" class="row hidden">
-          <div>
-            <label class="title">ผู้ติดตามคนที่ 2<span class="en"> / Accompanying Guest 2</span></label>
-            <input id="accompany_2_name">
-          </div>
-          <div>
-            <label class="title">ตำแหน่ง / ความสัมพันธ์<span class="en"> / Role / Relation</span></label>
-            <input id="accompany_2_role">
-          </div>
-        </div>
-
-        <div id="accompany_3_block" class="row hidden">
-          <div>
-            <label class="title">ผู้ติดตามคนที่ 3<span class="en"> / Accompanying Guest 3</span></label>
-            <input id="accompany_3_name">
-          </div>
-          <div>
-            <label class="title">ตำแหน่ง / ความสัมพันธ์<span class="en"> / Role / Relation</span></label>
-            <input id="accompany_3_role">
-          </div>
-        </div>
-
-        <div id="accompany_4_block" class="row hidden">
-          <div>
-            <label class="title">ผู้ติดตามคนที่ 4<span class="en"> / Accompanying Guest 4</span></label>
-            <input id="accompany_4_name">
-          </div>
-          <div>
-            <label class="title">ตำแหน่ง / ความสัมพันธ์<span class="en"> / Role / Relation</span></label>
-            <input id="accompany_4_role">
-          </div>
-        </div>
-
-        <div id="accompany_extra_note_block" class="row hidden">
-          <div>
-            <label class="title">หมายเหตุเพิ่มเติมเกี่ยวกับผู้ติดตาม<span class="en"> / Accompanying Notes (optional)</span></label>
-            <input id="accompany_extra_note" placeholder="กรณีมีผู้ติดตามมากกว่า 4 คน หรือข้อมูลเพิ่มเติมอื่น ๆ">
-          </div>
-        </div>
-
-        <!-- E. Attendance -->
-        <div class="section-title">E. วันที่จะเข้าร่วม / Attendance Days</div>
-
-        <div class="row">
-          <div>
-            <label class="title">เลือกวันที่จะเข้าร่วม<span class="en"> / Which day(s) will you attend?</span> *</label>
-            <div class="inline-checks" id="attend_days_group">
-              <label><input type="checkbox" value="Wed 17 Dec"> <span>Wed 17 Dec</span></label>
-              <label><input type="checkbox" value="Thu 18 Dec"> <span>Thu 18 Dec</span></label>
-              <label><input type="checkbox" value="Fri 19 Dec"> <span>Fri 19 Dec</span></label>
-              <label><input type="checkbox" value="Sat 20 Dec"> <span>Sat 20 Dec</span></label>
-              <label><input type="checkbox" value="Sun 21 Dec"> <span>Sun 21 Dec</span></label>
-            </div>
-            <div class="note">กรุณาเลือกอย่างน้อย 1 วัน • Please select at least one day.</div>
-          </div>
-        </div>
-
-        <!-- F. PDPA & Media Consent -->
-        <div class="section-title">F. PDPA & Media Consent</div>
-
-        <!-- PDPA -->
-        <div class="row">
-          <div>
-            <label class="title">การจัดเก็บและใช้ข้อมูลส่วนบุคคล<span class="en"> / PDPA Consent</span> *</label>
-            <div class="note">
-              โปรดอ่านรายละเอียดนโยบายข้อมูลส่วนบุคคลก่อนทำเครื่องหมายยินยอม
-              <button type="button" class="link-btn" id="open-consent-modal">
-                อ่านรายละเอียด / Read more
-              </button>
-            </div>
-            <label class="consent-check">
-              <input type="checkbox" id="pdpa_consent" required>
-              <span>
-                ฉันได้อ่านและยินยอมให้จัดเก็บและใช้ข้อมูลส่วนบุคคลตามที่ระบุไว้ในนโยบาย<br>
-                I have read and consent to the use of my personal data as stated in the policy.
-              </span>
-            </label>
-          </div>
-        </div>
-
-        <!-- Media -->
-        <div class="row">
-          <div>
-            <label class="title">การบันทึกภาพและวิดีโอ<span class="en"> / Media (Photo & Video) Consent</span> *</label>
-            <div class="note">
-              โปรดอ่านรายละเอียดเกี่ยวกับการบันทึกภาพ/วิดีโอก่อนทำเครื่องหมายยินยอม
-              <button type="button" class="link-btn" id="open-consent-modal-2">
-                อ่านรายละเอียด / Read more
-              </button>
-            </div>
-            <label class="consent-check">
-              <input type="checkbox" id="media_consent" required>
-              <span>
-                ฉันได้อ่านและยินยอมตามเงื่อนไขการบันทึกภาพและวิดีโอข้างต้น<br>
-                I have read and consent to the media recording conditions above.
-              </span>
-            </label>
-          </div>
-        </div>
-
-        <button class="btn primary wide" type="submit" id="submit-btn">
-          ส่งแบบฟอร์ม • Submit Event Participate Form
-        </button>
-      </form>
+  <!-- FORM SCREEN -->
+  <section id="screen-form" class="card">
+    <div class="head">
+      <h2>Media Registration</h2>
+      <p class="note">ลงทะเบียนสำหรับสื่อมวลชน • Media Accreditation</p>
     </div>
 
-    <div class="footer">© 2025 WGP#1 • Event Participate Form for Organization</div>
+    <form class="body" id="media-form">
+
+      <div class="section-title">A. Personal Info</div>
+
+      <div class="row two">
+        <div>
+          <label class="title">ชื่อจริง / First Name *</label>
+          <input id="first_name" required>
+        </div>
+        <div>
+          <label class="title">นามสกุล / Last Name *</label>
+          <input id="last_name" required>
+        </div>
+      </div>
+
+      <div class="row two">
+        <div>
+          <label class="title">เบอร์ติดต่อ / Phone *</label>
+          <input id="phone" required placeholder="+66 ... / +...">
+        </div>
+        <div>
+          <label class="title">อีเมล / Email *</label>
+          <input id="email" type="email" required placeholder="example@email.com">
+        </div>
+      </div>
+
+      <div class="row">
+        <div>
+          <label class="title">ชื่อหน่วยงานหรือสำนักข่าว / Media Company *</label>
+          <input id="media_company" required placeholder="เช่น Thairath, Workpoint, AP News">
+        </div>
+      </div>
+
+      <div class="section-title">B. Media Proof (บังคับ)</div>
+
+      <div class="row">
+        <div>
+          <label class="title">อัปโหลดบัตรสื่อ / Upload Media ID *</label>
+          <input type="file" id="media_file" accept="image/*" required>
+          <input type="hidden" id="media_url">
+          <p id="upload_status" class="note">กรุณาอัปโหลดรูปไฟล์บัตรสื่อ • Required</p>
+        </div>
+      </div>
+
+      <div class="section-title">C. Consent</div>
+
+      <div class="row">
+        <p class="note" style="line-height:1.55;">
+          ในการเข้าร่วมงาน WGP#1 Waterjet World Cup 2025 ซึ่งมีการถ่ายทอดสดและเผยแพร่สู่สาธารณะทั่วโลก
+          ท่านยินยอมให้ผู้จัดงานบันทึกภาพนิ่ง วิดีโอ และเสียงของท่านเพื่อใช้ในสื่อประชาสัมพันธ์ โฆษณา ถ่ายทอดสด
+          และการเผยแพร่ในช่องทางต่าง ๆ โดยไม่ต้องขออนุญาตเพิ่มเติม หรือจ่ายค่าตอบแทนใด ๆ<br><br>
+          By attending the event, you grant full consent for photography, video, and media usage for broadcasting,
+          promotions, advertising, and live streaming.
+        </p>
+        <label>
+          <input type="checkbox" id="media_consent" required>
+          &nbsp;ฉันยอมรับ / I agree *
+        </label>
+      </div>
+
+      <button class="btn primary" type="submit" id="submit-btn">
+        ส่งแบบฟอร์ม • Submit
+      </button>
+
+    </form>
   </section>
 
-  <!-- SCREEN 2: THANK YOU -->
-  <section id="screen-thank" class="screen container hidden">
-    <div class="card">
-      <div class="thankfull">
-        <h2>THANK YOU!</h2>
-        <p>
-          Thank you for being part of this world-class competition — we hope you enjoy an unforgettable and thrilling experience!<br><br>
-          ขอบคุณที่ร่วมเป็นส่วนหนึ่งของการแข่งขันระดับโลกครั้งนี้ — ขอให้คุณสนุกกับประสบการณ์สุดมันส์!
-        </p>
-      </div>
-      <div class="body" style="text-align:center">
-        <button class="btn dark" id="back-to-form">
-          กรอกแบบฟอร์มใหม่สำหรับหน่วยงานอื่น • New Entry
-        </button>
-      </div>
+  <!-- THANK YOU SCREEN -->
+  <section id="screen-thank" class="hidden">
+    <div class="thankfull">
+      <h2>THANK YOU!</h2>
+      <p>Your media registration has been submitted successfully.<br>ขอบคุณสำหรับการลงทะเบียนสื่อมวลชน</p>
+      <button class="btn primary" onclick="showForm()">ลงทะเบียนใหม่ • New Entry</button>
     </div>
   </section>
 
-  <!-- MODAL: PDPA & MEDIA CONSENT DETAILS -->
-  <div id="consent-modal" class="modal hidden">
-    <div id="consent-modal-backdrop" class="modal-backdrop"></div>
-    <div class="modal-content">
-      <button type="button" class="modal-close" id="close-consent-modal">&times;</button>
-      <h3>Consent Details</h3>
+  <div class="footer">© 2025 WGP#1 • Media Registration</div>
 
-      <h4>TH: การจัดเก็บและใช้ข้อมูลส่วนบุคคล (PDPA)</h4>
-      <p>
-        ข้อมูลที่กรอกในแบบฟอร์มนี้จะถูกใช้เพื่อการจัดการงาน ที่นั่ง พิธีการ และการติดต่อประสานงานเกี่ยวกับงาน
-        WGP#1 Waterjet World Cup 2025 เท่านั้น และจะไม่ถูกนำไปใช้เพื่อวัตถุประสงค์อื่นโดยไม่ได้รับความยินยอม
-        ทั้งนี้ ผู้จัดงานจะดำเนินการเก็บรักษาข้อมูลตามมาตรการความปลอดภัยที่เหมาะสม
-      </p>
+<script>
+function showForm(){
+  document.getElementById("screen-form").classList.remove("hidden");
+  document.getElementById("screen-thank").classList.add("hidden");
+  document.getElementById("media-form").reset();
+  mediaUploadState={path:null,url:null};
+}
 
-      <h4>EN: Personal Data (PDPA)</h4>
-      <p>
-        The information provided in this form will be used solely for event logistics, seating arrangements, protocol,
-        and communications related to the WGP#1 Waterjet World Cup 2025, and will not be used for other purposes
-        without your consent. The organizers will apply appropriate security measures to protect your personal data.
-      </p>
+/* UPLOAD MEDIA PROOF */
+document.getElementById("media_file").addEventListener("change", async function(){
+  const file = this.files[0];
+  if(!file) return;
 
-      <h4>EN: Media (Photo & Video)</h4>
-      <p>
-        By attending the WGP#1 Waterjet World Cup 2025, which includes live broadcasting and global media coverage,
-        you grant the event organizers and their partners the right to photograph, film, and record your image and voice
-        for use in promotions, advertising, live streams, and other media—without the need for further consent or
-        compensation. Entering the event area constitutes full and unconditional consent. If you do not wish to appear
-        in such media, please avoid camera zones or broadcast areas.
-      </p>
+  const status = document.getElementById("upload_status");
+  status.textContent = "Uploading...";
+  status.style.color = "#000";
 
-      <h4>TH: การบันทึกภาพและวิดีโอ</h4>
-      <p>
-        ในการเข้าชมการแข่งขัน WGP#1 Waterjet World Cup 2025 ซึ่งมีการถ่ายทอดสดและเผยแพร่สู่สาธารณะทั่วโลก
-        ท่านยินยอมให้ผู้จัดงานและพันธมิตร สามารถบันทึกภาพนิ่ง วิดีโอ และเสียงของท่าน เพื่อใช้ในสื่อประชาสัมพันธ์
-        โฆษณา ถ่ายทอดสด และสื่ออื่น ๆ โดยไม่ต้องขออนุญาตหรือจ่ายค่าตอบแทนใด ๆ เพิ่มเติม การเข้าสู่พื้นที่จัดงาน
-        ถือเป็นการให้ความยินยอมโดยสมบูรณ์ หากไม่ประสงค์ให้ถูกบันทึกภาพ โปรดหลีกเลี่ยงบริเวณกล้องหรือพื้นที่ถ่ายทอดสด
-      </p>
-    </div>
-  </div>
+  const clean = file.name.replace(/[^a-zA-Z0-9.-]/g,"_");
+  const path = "media-proof/" + Date.now()+"-"+clean;
 
-  <script>
-    function showScreen(id) {
-      document.getElementById('screen-form').classList.add('hidden');
-      document.getElementById('screen-thank').classList.add('hidden');
-      document.getElementById(id).classList.remove('hidden');
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+  const {data, error} = await sb.storage.from("vip_media_proofs")
+    .upload(path, file);
 
-    // Toggle Media fields when org_type = media
-    (function initMediaToggle() {
-      var sel = document.getElementById('org_type');
-      var proofBlock = document.getElementById('media-proof-block');
+  if(error){
+    status.textContent = "Upload failed, try again.";
+    status.style.color = "red";
+    return;
+  }
 
-      function toggle() {
-        var isMedia = (sel.value === 'media');
-        proofBlock.classList.toggle('hidden', !isMedia);
+  const { data:publicData } = sb.storage.from("vip_media_proofs").getPublicUrl(path);
 
-        // ถ้าเปลี่ยนจาก media ไปเป็นประเภทอื่น ให้รีเซ็ตสถานะอัปโหลด
-        if (!isMedia) {
-          var fileInput = document.getElementById('media_proof_file');
-          var statusEl = document.getElementById('media-proof-status');
-          var urlHidden = document.getElementById('media_proof_image_url');
-          if (fileInput) fileInput.value = '';
-          if (urlHidden) urlHidden.value = '';
-          mediaUploadState = { path: null, url: null };
-          if (statusEl) {
-            statusEl.textContent = 'อัปโหลดภาพบัตรสื่อโดยตรงจากอุปกรณ์ • Upload your media ID photo from device.';
-            statusEl.style.color = '#666';
-          }
-        }
-      }
-      sel.addEventListener('change', toggle);
-      toggle();
-    })();
+  mediaUploadState = {
+    path: path,
+    url: publicData.publicUrl
+  };
 
-    // อัปโหลดรูปบัตรสื่อไป Supabase Storage bucket: vip_media_proofs
-    (function initMediaUpload() {
-      var fileInput = document.getElementById('media_proof_file');
-      var statusEl = document.getElementById('media-proof-status');
-      var urlHidden = document.getElementById('media_proof_image_url');
+  document.getElementById("media_url").value = publicData.publicUrl;
+  status.textContent = "Uploaded ✓";
+  status.style.color = "green";
+});
 
-      if (!fileInput) return;
+/* SUBMIT FORM */
+document.getElementById("media-form").addEventListener("submit", async function(e){
+  e.preventDefault();
 
-      fileInput.addEventListener('change', async function () {
-        var file = fileInput.files[0];
-        if (!file) return;
+  if(!mediaUploadState.url){
+    alert("กรุณาอัปโหลด Media ID ก่อนส่งแบบฟอร์ม");
+    return;
+  }
 
-        statusEl.textContent = 'กำลังอัปโหลดรูปภาพ... / Uploading image...';
-        statusEl.style.color = '#444';
-        mediaUploadState = { path: null, url: null };
-        urlHidden.value = '';
+  const payload = {
+    submitted_at: new Date().toISOString(),
+    first_name: document.getElementById("first_name").value.trim(),
+    last_name: document.getElementById("last_name").value.trim(),
+    phone: document.getElementById("phone").value.trim(),
+    email: document.getElementById("email").value.trim(),
+    media_company: document.getElementById("media_company").value.trim(),
+    media_proof_url: mediaUploadState.url,
+    media_consent: document.getElementById("media_consent").checked
+  };
 
-        try {
-          var cleanName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-          var path = 'org-media/' + Date.now() + '-' + Math.random().toString(36).slice(2) + '-' + cleanName;
+  const { error } = await sb.from("media_registrations").insert([payload]);
 
-          const { data, error } = await sb
-            .storage
-            .from('vip_media_proofs')
-            .upload(path, file, {
-              cacheControl: '3600',
-              upsert: false
-            });
+  if(error){
+    alert("เกิดข้อผิดพลาด: " + error.message);
+    return;
+  }
 
-          if (error) {
-            console.error('Upload error:', error);
-            statusEl.textContent = 'อัปโหลดไม่สำเร็จ กรุณาลองใหม่ • Upload failed, please try again.';
-            statusEl.style.color = '#b91c1c';
-            return;
-          }
+  document.getElementById("screen-form").classList.add("hidden");
+  document.getElementById("screen-thank").classList.remove("hidden");
+});
+</script>
 
-          const { data: publicData } = sb
-            .storage
-            .from('vip_media_proofs')
-            .getPublicUrl(path);
-
-          mediaUploadState = {
-            path: path,
-            url: publicData.publicUrl
-          };
-          urlHidden.value = publicData.publicUrl || '';
-
-          statusEl.textContent = 'อัปโหลดสำเร็จ ✓ • Uploaded successfully.';
-          statusEl.style.color = '#16a34a';
-        } catch (err) {
-          console.error('Unexpected upload error:', err);
-          statusEl.textContent = 'เกิดข้อผิดพลาดในการอัปโหลด กรุณาลองใหม่ • Unexpected upload error.';
-          statusEl.style.color = '#b91c1c';
-        }
-      });
-    })();
-
-    // Toggle accompany blocks & extra note based on accompany_count
-    (function initAccompanyToggle() {
-      var sel = document.getElementById('accompany_count');
-      var blocks = [
-        document.getElementById('accompany_1_block'),
-        document.getElementById('accompany_2_block'),
-        document.getElementById('accompany_3_block'),
-        document.getElementById('accompany_4_block'),
-      ];
-      var extraBlock = document.getElementById('accompany_extra_note_block');
-
-      function toggle() {
-        var raw = Number(sel.value || 0);   // 0,1,2,3,4(=4+)
-        var n = raw;
-        if (n > 4) n = 4;
-        for (var i = 0; i < blocks.length; i++) {
-          blocks[i].classList.toggle('hidden', i >= n);
-        }
-        // ถ้าเลือก 4+ (value = 4) → แสดงช่อง Extra Note
-        extraBlock.classList.toggle('hidden', raw < 4);
-      }
-      sel.addEventListener('change', toggle);
-      toggle();
-    })();
-
-    // Modal: PDPA & Media details
-    (function(){
-      const modal    = document.getElementById('consent-modal');
-      const openBtn1 = document.getElementById('open-consent-modal');
-      const openBtn2 = document.getElementById('open-consent-modal-2');
-      const closeBtn = document.getElementById('close-consent-modal');
-      const backdrop = document.getElementById('consent-modal-backdrop');
-
-      if (!modal || !openBtn1 || !openBtn2 || !closeBtn || !backdrop) return;
-
-      function openModal(){ modal.classList.remove('hidden'); }
-      function closeModal(){ modal.classList.add('hidden'); }
-
-      openBtn1.addEventListener('click', openModal);
-      openBtn2.addEventListener('click', openModal);
-      closeBtn.addEventListener('click', closeModal);
-      backdrop.addEventListener('click', closeModal);
-    })();
-
-    // Form submit -> Supabase insert
-    document.getElementById('vip-org-form').addEventListener('submit', async function (e) {
-      e.preventDefault();
-
-      // Validate at least one attendance day
-      var dayChecks = document.querySelectorAll('#attend_days_group input[type=checkbox]');
-      var selectedDays = [];
-      dayChecks.forEach(function (ch) {
-        if (ch.checked) selectedDays.push(ch.value);
-      });
-      if (selectedDays.length === 0) {
-        alert('กรุณาเลือกวันที่จะเข้าร่วมอย่างน้อย 1 วัน / Please select at least one day.');
-        return;
-      }
-
-      // ถ้าเป็นสื่อมวลชน ต้องมีรูป Media Proof อัปโหลดแล้ว
-      var orgType = document.getElementById('org_type').value;
-      if (orgType === 'media' && !mediaUploadState.url) {
-        alert('สำหรับสื่อมวลชน กรุณาอัปโหลดรูปบัตรสื่อก่อนส่งแบบฟอร์ม • For media organizations, please upload a media ID photo before submitting.');
-        return;
-      }
-
-      var btn = document.getElementById('submit-btn');
-      var oldText = btn.textContent;
-      btn.textContent = 'กำลังส่ง... / Submitting...';
-      btn.disabled = true;
-
-      var payload = {
-        submitted_at: new Date().toISOString(),
-
-        org_type: orgType || null,
-        org_name: document.getElementById('org_name').value.trim() || null,
-
-        media_proof_image_url: (
-          document.getElementById('media_proof_image_url').value.trim() ||
-          mediaUploadState.url ||
-          null
-        ),
-
-        vip_title: document.getElementById('vip_title').value || null,
-        vip_firstname_th: document.getElementById('vip_firstname_th').value.trim() || null,
-        vip_lastname_th: document.getElementById('vip_lastname_th').value.trim() || null,
-        vip_position: document.getElementById('vip_position').value.trim() || null,
-
-        contact_phone: document.getElementById('contact_phone').value.trim() || null,
-        contact_person_name: document.getElementById('contact_person_name').value.trim() || null,
-        contact_person_position: document.getElementById('contact_person_position').value.trim() || null,
-        contact_person_phone: document.getElementById('contact_person_phone').value.trim() || null,
-
-        accompany_count: Number(document.getElementById('accompany_count').value || 0),
-        accompany_extra_note: document.getElementById('accompany_extra_note').value.trim() || null,
-
-        accompany_1_name: document.getElementById('accompany_1_name').value.trim() || null,
-        accompany_1_role: document.getElementById('accompany_1_role').value.trim() || null,
-        accompany_2_name: document.getElementById('accompany_2_name').value.trim() || null,
-        accompany_2_role: document.getElementById('accompany_2_role').value.trim() || null,
-        accompany_3_name: document.getElementById('accompany_3_name').value.trim() || null,
-        accompany_3_role: document.getElementById('accompany_3_role').value.trim() || null,
-        accompany_4_name: document.getElementById('accompany_4_name').value.trim() || null,
-        accompany_4_role: document.getElementById('accompany_4_role').value.trim() || null,
-
-        attend_days: selectedDays.join(', '),
-
-        pdpa_consent: document.getElementById('pdpa_consent').checked,
-        media_consent: document.getElementById('media_consent').checked
-      };
-
-      try {
-        const { error } = await sb
-          .from('vip_organization_participations')
-          .insert([payload]);
-
-        if (error) {
-          console.error('Supabase insert error:', error);
-          alert('บันทึกข้อมูลไม่สำเร็จ กรุณาลองอีกครั้ง หรือแจ้งเจ้าหน้าที่\n\nError: ' + error.message);
-        } else {
-          document.getElementById('vip-org-form').reset();
-          mediaUploadState = { path: null, url: null };
-          // ซ่อน block ผู้ติดตาม + media proof กลับไปสภาพเริ่มต้น
-          ['accompany_1_block','accompany_2_block','accompany_3_block','accompany_4_block','accompany_extra_note_block']
-            .forEach(function(id){ var el = document.getElementById(id); if(el) el.classList.add('hidden'); });
-          document.getElementById('media-proof-block').classList.add('hidden');
-          var statusEl = document.getElementById('media-proof-status');
-          var urlHidden = document.getElementById('media_proof_image_url');
-          var fileInput = document.getElementById('media_proof_file');
-          if (fileInput) fileInput.value = '';
-          if (urlHidden) urlHidden.value = '';
-          if (statusEl) {
-            statusEl.textContent = 'อัปโหลดภาพบัตรสื่อโดยตรงจากอุปกรณ์ • Upload your media ID photo from device.';
-            statusEl.style.color = '#666';
-          }
-          showScreen('screen-thank');
-        }
-      } catch (err) {
-        console.error('Unexpected error:', err);
-        alert('เกิดข้อผิดพลาดในการเชื่อมต่อระบบ กรุณาลองใหม่อีกครั้ง');
-      } finally {
-        btn.textContent = oldText;
-        btn.disabled = false;
-      }
-    });
-
-    document.getElementById('back-to-form').addEventListener('click', function () {
-      document.getElementById('vip-org-form').reset();
-      mediaUploadState = { path: null, url: null };
-      // รีเซ็ตสถานะ UI พิเศษกลับไปเหมือนตอนโหลดครั้งแรก
-      ['accompany_1_block','accompany_2_block','accompany_3_block','accompany_4_block','accompany_extra_note_block']
-        .forEach(function(id){ var el = document.getElementById(id); if(el) el.classList.add('hidden'); });
-      document.getElementById('media-proof-block').classList.add('hidden');
-      var statusEl = document.getElementById('media-proof-status');
-      var urlHidden = document.getElementById('media_proof_image_url');
-      var fileInput = document.getElementById('media_proof_file');
-      if (fileInput) fileInput.value = '';
-      if (urlHidden) urlHidden.value = '';
-      if (statusEl) {
-        statusEl.textContent = 'อัปโหลดภาพบัตรสื่อโดยตรงจากอุปกรณ์ • Upload your media ID photo from device.';
-        statusEl.style.color = '#666';
-      }
-      showScreen('screen-form');
-    });
-  </script>
 </body>
 </html>
