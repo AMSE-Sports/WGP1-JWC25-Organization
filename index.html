@@ -163,16 +163,14 @@
   <!-- HEADER -->
   <div class="header"><img src="Header.png" alt=""></div>
 
-  <!-- FORM SCREEN -->
-  <section id="screen-form" class="card">
+  <!-- SCREEN 1: STAFF SECTION -->
+  <section id="screen-staff" class="card">
     <div class="head">
       <h2>Media Registration</h2>
-      <p class="note">ลงทะเบียนสำหรับสื่อมวลชน / Influencer</p>
+      <p class="note">ส่วนของเจ้าหน้าที่ • Staff Section</p>
     </div>
 
-    <form class="body" id="media-form">
-
-      <!-- A. STAFF SECTION -->
+    <form class="body" id="staff-form">
       <div class="section-title">A. Staff Section (เจ้าหน้าที่)</div>
 
       <div class="row">
@@ -219,9 +217,20 @@
         </div>
       </div>
 
-      <hr style="margin:24px 0; border:none; border-top:1px solid var(--border);">
+      <button class="btn primary" type="submit" id="staff-next-btn">
+        ถัดไป (ส่งต่อให้ผู้ลงทะเบียนกรอก) • Next
+      </button>
+    </form>
+  </section>
 
-      <!-- B. REGISTRANT SECTION -->
+  <!-- SCREEN 2: REGISTRANT SECTION -->
+  <section id="screen-registrant" class="card hidden">
+    <div class="head">
+      <h2>Media Registration</h2>
+      <p class="note">ส่วนของผู้ลงทะเบียน • Registrant Section</p>
+    </div>
+
+    <form class="body" id="registrant-form">
       <div class="section-title">B. Registrant Information (ผู้ลงทะเบียน)</div>
 
       <div class="row two">
@@ -246,7 +255,7 @@
         </div>
       </div>
 
-      <!-- B1. MEDIA COMPANY (AGENCY ONLY) -->
+      <!-- MEDIA COMPANY (AGENCY ONLY) -->
       <div class="row" id="media_company_box">
         <div>
           <label class="title">ชื่อหน่วยงานหรือสำนักข่าว / Media Company *</label>
@@ -254,7 +263,6 @@
         </div>
       </div>
 
-      <!-- C. CONSENT -->
       <div class="section-title">C. Consent</div>
 
       <div class="row">
@@ -302,7 +310,6 @@
       <button class="btn primary" type="submit" id="submit-btn">
         ส่งแบบฟอร์ม • Submit
       </button>
-
     </form>
   </section>
 
@@ -318,23 +325,18 @@
   <div class="footer">© 2025 WGP#1 • Media Registration</div>
 
 <script>
-function showForm(){
-  document.getElementById("screen-form").classList.remove("hidden");
-  document.getElementById("screen-thank").classList.add("hidden");
-  document.getElementById("media-form").reset();
-  document.getElementById("social-list").innerHTML = "";
-  document.getElementById("agency_upload_status").textContent = "กรุณาอัปโหลดรูปบัตรสื่อ";
-  document.getElementById("influencer_upload_status").textContent = "กรุณาอัปโหลดรูปหน้าโปรไฟล์หรือหน้าโพสต์ของโซเชียล";
-  mediaUploadState = { path:null, url:null, type:null };
-  updateMediaTypeUI();
-}
-
 /* ---------- DOM ELEMENTS ---------- */
-const mediaForm          = document.getElementById("media-form");
-const mediaTypeSelect    = document.getElementById("media_type");
-const agencyUploadBox    = document.getElementById("agency_upload_box");
-const influencerBox      = document.getElementById("influencer_box");
-const mediaCompanyBox    = document.getElementById("media_company_box");
+const screenStaff       = document.getElementById("screen-staff");
+const screenRegistrant  = document.getElementById("screen-registrant");
+const screenThank       = document.getElementById("screen-thank");
+
+const staffForm         = document.getElementById("staff-form");
+const registrantForm    = document.getElementById("registrant-form");
+
+const mediaTypeSelect   = document.getElementById("media_type");
+const agencyUploadBox   = document.getElementById("agency_upload_box");
+const influencerBox     = document.getElementById("influencer_box");
+const mediaCompanyBox   = document.getElementById("media_company_box");
 
 const agencyFileInput    = document.getElementById("agency_file");
 const agencyUploadStatus = document.getElementById("agency_upload_status");
@@ -346,6 +348,25 @@ const socialList         = document.getElementById("social-list");
 const addSocialBtn       = document.getElementById("add-social-btn");
 
 const submitBtn          = document.getElementById("submit-btn");
+
+/* ---------- RESET TO FIRST SCREEN ---------- */
+function showForm(){
+  screenStaff.classList.remove("hidden");
+  screenRegistrant.classList.add("hidden");
+  screenThank.classList.add("hidden");
+
+  staffForm.reset();
+  registrantForm.reset();
+
+  socialList.innerHTML = "";
+  agencyUploadStatus.textContent = "กรุณาอัปโหลดรูปบัตรสื่อ";
+  agencyUploadStatus.style.color = "#666";
+  influencerUploadStatus.textContent = "กรุณาอัปโหลดรูปหน้าโปรไฟล์หรือหน้าโพสต์ของโซเชียล";
+  influencerUploadStatus.style.color = "#666";
+
+  mediaUploadState = { path:null, url:null, type:null };
+  updateMediaTypeUI();
+}
 
 /* ---------- UI UPDATE BY MEDIA TYPE ---------- */
 function updateMediaTypeUI(){
@@ -501,8 +522,8 @@ influencerFileInput.addEventListener("change", async function(){
   }
 });
 
-/* ---------- SUBMIT FORM ---------- */
-mediaForm.addEventListener("submit", async function(e){
+/* ---------- STAFF FORM SUBMIT: ไปหน้าผู้ลงทะเบียน ---------- */
+staffForm.addEventListener("submit", function(e){
   e.preventDefault();
 
   const mediaType = mediaTypeSelect.value;
@@ -514,9 +535,40 @@ mediaForm.addEventListener("submit", async function(e){
   if(!mediaUploadState.url){
     alert(
       mediaType === "agency"
-        ? "กรุณาอัปโหลดรูปบัตรสื่อก่อนส่งฟอร์ม"
-        : "กรุณาอัปโหลดรูปหน้าโซเชียลของ Influencer ก่อนส่งฟอร์ม"
+        ? "กรุณาอัปโหลดรูปบัตรสื่อก่อนส่งต่อให้ผู้ลงทะเบียน"
+        : "กรุณาอัปโหลดรูปหน้าโซเชียลของ Influencer ก่อนส่งต่อให้ผู้ลงทะเบียน"
     );
+    return;
+  }
+
+  if(mediaType === "influencer"){
+    const socials = collectSocials();
+    if(!socials.length){
+      alert("กรุณากรอกอย่างน้อย 1 โซเชียลมีเดียของ Influencer");
+      return;
+    }
+  }
+
+  // ไปหน้าผู้ลงทะเบียน
+  screenStaff.classList.add("hidden");
+  screenRegistrant.classList.remove("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+/* ---------- REGISTRANT FORM SUBMIT: INSERT TO SUPABASE ---------- */
+registrantForm.addEventListener("submit", async function(e){
+  e.preventDefault();
+
+  const mediaType = mediaTypeSelect.value;
+  if(!mediaType){
+    alert("ข้อมูลประเภทสื่อหายไป กรุณาให้เจ้าหน้าที่กรอกส่วนที่ 1 ใหม่อีกครั้ง");
+    showForm();
+    return;
+  }
+
+  if(!mediaUploadState.url){
+    alert("ข้อมูลไฟล์ที่อัปโหลดไม่ครบ กรุณาให้เจ้าหน้าที่กรอกส่วนที่ 1 ใหม่อีกครั้ง");
+    showForm();
     return;
   }
 
@@ -524,7 +576,8 @@ mediaForm.addEventListener("submit", async function(e){
   if(mediaType === "influencer"){
     socials = collectSocials();
     if(!socials.length){
-      alert("กรุณากรอกอย่างน้อย 1 โซเชียลมีเดียของ Influencer");
+      alert("โซเชียลมีเดียของ Influencer หายไป กรุณาให้เจ้าหน้าที่ตรวจสอบในส่วนที่ 1");
+      showForm();
       return;
     }
   }
@@ -547,7 +600,7 @@ mediaForm.addEventListener("submit", async function(e){
       return;
     }
   }else{
-    // influencer ไม่ต้องมีสำนักข่าว
+    // Influencer ไม่ต้องมีสำนักข่าว
     mediaCompany = null;
   }
 
@@ -560,16 +613,16 @@ mediaForm.addEventListener("submit", async function(e){
   submitBtn.textContent = "กำลังบันทึก... / Submitting...";
 
   const payload = {
-    submitted_at:     new Date().toISOString(),
-    media_type:       mediaType,              // ต้องมี column media_type
-    first_name:       firstName,
-    last_name:        lastName,
-    phone:            phone,
-    email:            email,
-    media_company:    mediaCompany,
-    media_proof_url:  mediaUploadState.url,
+    submitted_at:       new Date().toISOString(),
+    media_type:         mediaType,              // ต้องมี column media_type
+    first_name:         firstName,
+    last_name:          lastName,
+    phone:              phone,
+    email:              email,
+    media_company:      mediaCompany,
+    media_proof_url:    mediaUploadState.url,
     influencer_socials: mediaType === "influencer" ? socials : null, // ต้องมี column influencer_socials (JSONB)
-    media_consent:    true
+    media_consent:      true
   };
 
   const { error } = await sb.from("media_registrations").insert([payload]);
@@ -582,8 +635,8 @@ mediaForm.addEventListener("submit", async function(e){
     return;
   }
 
-  document.getElementById("screen-form").classList.add("hidden");
-  document.getElementById("screen-thank").classList.remove("hidden");
+  screenRegistrant.classList.add("hidden");
+  screenThank.classList.remove("hidden");
   submitBtn.disabled = false;
   submitBtn.textContent = "ส่งแบบฟอร์ม • Submit";
 });
