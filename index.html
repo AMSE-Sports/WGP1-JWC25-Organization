@@ -14,7 +14,12 @@
 
     const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let mediaUploadState = { path:null, url:null };
+    // เก็บสถานะไฟล์ที่อัปโหลด (ใช้ร่วมกันทั้ง Agency / Influencer)
+    let mediaUploadState = {
+      path: null,
+      url: null,
+      type: null   // 'agency' หรือ 'influencer'
+    };
   </script>
 
   <style>
@@ -45,6 +50,7 @@
       border-bottom:1px solid var(--border);
     }
     .head h2 { margin:0; font-size:var(--font-title); font-weight:900; }
+    .head p { margin:4px 0 0; color:#666; }
 
     .body { padding:20px; }
 
@@ -63,7 +69,7 @@
       font-size:var(--font-base);
       background:#fff;
     }
-    input:focus {
+    input:focus, select:focus {
       border-color:var(--primary);
       box-shadow:0 0 0 3px rgba(243,112,33,.2);
       outline:none;
@@ -102,38 +108,34 @@
     .hidden { display:none!important; }
     .footer { padding:20px; text-align:center; color:#666; }
 
-    /* กล่องข้อความ Consent แบบเต็ม */
-.consent-box {
-  padding: 14px 16px;
-  border-radius: 14px;
-  background: #fff7f1;
-  border: 1px solid #fed7aa;
-  font-size: var(--font-base);
-  line-height: 1.6;
-  color: #444;
-}
+    .consent-box {
+      padding: 14px 16px;
+      border-radius: 14px;
+      background: #fff7f1;
+      border: 1px solid #fed7aa;
+      font-size: var(--font-base);
+      line-height: 1.6;
+      color: #444;
+    }
 
-/* แถว checkbox ให้ตกกับข้อความสวย ๆ */
-.consent-check {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  margin-top: 10px;
-  font-size: var(--font-base);
-}
-
-.consent-check input[type="checkbox"] {
-  flex: 0 0 auto;
-  width: 1.4em;
-  height: 1.4em;
-  margin-top: 0.25em;
-  accent-color: var(--primary);
-}
-
-.consent-check span {
-  flex: 1 1 auto;
-  line-height: 1.5;
-}
+    .consent-check {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 10px;
+      font-size: var(--font-base);
+    }
+    .consent-check input[type="checkbox"] {
+      flex: 0 0 auto;
+      width: 1.4em;
+      height: 1.4em;
+      margin-top: 0.25em;
+      accent-color: var(--primary);
+    }
+    .consent-check span {
+      flex: 1 1 auto;
+      line-height: 1.5;
+    }
 
     /* THANK YOU PAGE */
     .thankfull {
@@ -146,23 +148,81 @@
     }
     .thankfull h2 { font-size:clamp(34px,4vw,60px); margin-bottom:14px; }
     .thankfull p { max-width:700px; line-height:1.5; font-size:clamp(18px,2vw,24px); }
+
+    .social-row { margin-bottom:10px; }
+    .small-label {
+      font-weight:600;
+      font-size:var(--font-base);
+      margin-bottom:4px;
+      display:block;
+    }
   </style>
 </head>
 
 <body>
   <!-- HEADER -->
-  <div class="header"><img src="Header.png"></div>
+  <div class="header"><img src="Header.png" alt=""></div>
 
   <!-- FORM SCREEN -->
   <section id="screen-form" class="card">
     <div class="head">
       <h2>Media Registration</h2>
-      <p class="note">ลงทะเบียนสำหรับสื่อมวลชน • Media Accreditation</p>
+      <p class="note">ลงทะเบียนสำหรับสื่อมวลชน / Influencer</p>
     </div>
 
     <form class="body" id="media-form">
 
-      <div class="section-title">A. Personal Info</div>
+      <!-- A. STAFF SECTION -->
+      <div class="section-title">A. Staff Section (เจ้าหน้าที่)</div>
+
+      <div class="row">
+        <div>
+          <label class="title">ประเภทการลงทะเบียน *</label>
+          <select id="media_type" required>
+            <option value="">— เลือกประเภทสื่อ —</option>
+            <option value="agency">Media Agency (สำนักข่าว)</option>
+            <option value="influencer">Influencer (> 50,000 followers)</option>
+          </select>
+          <p class="note">
+            ให้เจ้าหน้าที่เลือกก่อนว่าเป็นสื่อสำนักข่าว หรือ Influencer จากนั้นดำเนินการอัปโหลดตามประเภท
+          </p>
+        </div>
+      </div>
+
+      <!-- A1. AGENCY UPLOAD -->
+      <div id="agency_upload_box" class="row hidden">
+        <div>
+          <label class="title">อัปโหลดบัตรสื่อ / Upload Media Card *</label>
+          <input type="file" id="agency_file" accept="image/*">
+          <p id="agency_upload_status" class="note">กรุณาอัปโหลดรูปบัตรสื่อ</p>
+        </div>
+      </div>
+
+      <!-- A2. INFLUENCER SECTION: SOCIAL + UPLOAD -->
+      <div id="influencer_box" class="hidden">
+        <label class="title">โซเชียลมีเดียของ Influencer *</label>
+        <p class="note">
+          ให้เจ้าหน้าที่กรอกโซเชียลหลักของ Influencer และสามารถเพิ่มหลายบัญชีได้
+        </p>
+
+        <div id="social-list"></div>
+
+        <button type="button" id="add-social-btn"
+          style="margin-top:6px; padding:10px 12px; border-radius:10px; border:1px solid #e5e7eb; background:#f9fafb; font-weight:700;">
+          + เพิ่มโซเชียลอื่น
+        </button>
+
+        <div style="margin-top:18px;">
+          <label class="title">อัปโหลดรูปหน้าโซเชียล / Upload Social Screenshot *</label>
+          <input type="file" id="influencer_file" accept="image/*">
+          <p id="influencer_upload_status" class="note">กรุณาอัปโหลดรูปหน้าโปรไฟล์หรือหน้าโพสต์ของโซเชียล</p>
+        </div>
+      </div>
+
+      <hr style="margin:24px 0; border:none; border-top:1px solid var(--border);">
+
+      <!-- B. REGISTRANT SECTION -->
+      <div class="section-title">B. Registrant Information (ผู้ลงทะเบียน)</div>
 
       <div class="row two">
         <div>
@@ -186,67 +246,58 @@
         </div>
       </div>
 
-      <div class="row">
+      <!-- B1. MEDIA COMPANY (AGENCY ONLY) -->
+      <div class="row" id="media_company_box">
         <div>
           <label class="title">ชื่อหน่วยงานหรือสำนักข่าว / Media Company *</label>
-          <input id="media_company" required placeholder="เช่น Thairath, Workpoint, AP News">
+          <input id="media_company" placeholder="เช่น Thairath, Workpoint, AP News">
         </div>
       </div>
 
-      <div class="section-title">B. Media Proof (บังคับ)</div>
+      <!-- C. CONSENT -->
+      <div class="section-title">C. Consent</div>
 
       <div class="row">
-        <div>
-          <label class="title">อัปโหลดบัตรสื่อ / Upload Media ID *</label>
-          <input type="file" id="media_file" accept="image/*" required>
-          <input type="hidden" id="media_url">
-          <p id="upload_status" class="note">กรุณาอัปโหลดรูปไฟล์บัตรสื่อ • Required</p>
+        <div class="consent-box">
+          <strong>TH: การจัดเก็บและใช้ข้อมูลส่วนบุคคล และการบันทึกภาพ/วิดีโอ</strong>
+          <p>
+            ข้อมูลที่กรอกในแบบฟอร์มนี้จะถูกใช้เพื่อการจัดการงาน การออกบัตรสื่อ การติดต่อประสานงาน 
+            และการดูแลความปลอดภัยภายในงาน WGP#1 Waterjet World Cup 2025 เท่านั้น 
+            ข้อมูลจะไม่ถูกนำไปใช้เพื่อวัตถุประสงค์อื่นโดยไม่ได้รับความยินยอมเพิ่มเติม 
+            และผู้จัดงานจะดำเนินการเก็บรักษาข้อมูลตามมาตรการความปลอดภัยที่เหมาะสม
+          </p>
+          <p>
+            นอกจากนี้ การเข้าร่วมงานซึ่งมีการถ่ายทอดสดและเผยแพร่สู่สาธารณะทั่วโลก 
+            ถือเป็นการยินยอมให้ผู้จัดงานและพันธมิตร สามารถบันทึกภาพนิ่ง วิดีโอ และเสียงของท่าน 
+            เพื่อนำไปใช้ในสื่อประชาสัมพันธ์ โฆษณา ถ่ายทอดสด คลิปสรุปงาน และสื่ออื่น ๆ ที่เกี่ยวข้อง 
+            โดยไม่ต้องขออนุญาตเป็นรายครั้ง หรือจ่ายค่าตอบแทนใด ๆ เพิ่มเติม
+          </p>
+
+          <strong>EN: Personal Data & Media (Photo & Video)</strong>
+          <p>
+            The information you provide in this form will be used solely for event management, 
+            media accreditation, coordination, and safety purposes related to the 
+            WGP#1 Waterjet World Cup 2025. It will not be used for other purposes without your further consent, 
+            and appropriate security measures will be applied to protect your data.
+          </p>
+          <p>
+            By attending the event, you grant the organizers and their partners full consent to photograph, film, 
+            and record your image and voice for broadcasting, promotions, advertising, live streaming, 
+            highlight clips, and other related media, without the need for additional permission 
+            or compensation on a case-by-case basis.
+          </p>
         </div>
       </div>
 
-     <div class="section-title">C. Consent</div>
-
-<div class="row">
-  <div>
-    <div class="consent-box">
-      <strong>TH: การจัดเก็บและใช้ข้อมูลส่วนบุคคล และการบันทึกภาพ/วิดีโอ</strong>
-      <p>
-        ข้อมูลที่กรอกในแบบฟอร์มนี้จะถูกใช้เพื่อการจัดการงาน การออกบัตรสื่อ การติดต่อประสานงาน 
-        และการดูแลความปลอดภัยภายในงาน WGP#1 Waterjet World Cup 2025 เท่านั้น 
-        ข้อมูลจะไม่ถูกนำไปใช้เพื่อวัตถุประสงค์อื่นโดยไม่ได้รับความยินยอมเพิ่มเติม 
-        และผู้จัดงานจะดำเนินการเก็บรักษาข้อมูลตามมาตรการความปลอดภัยที่เหมาะสม
-      </p>
-      <p>
-        นอกจากนี้ การเข้าร่วมงานซึ่งมีการถ่ายทอดสดและเผยแพร่สู่สาธารณะทั่วโลก 
-        ถือเป็นการยินยอมให้ผู้จัดงานและพันธมิตร สามารถบันทึกภาพนิ่ง วิดีโอ และเสียงของท่าน 
-        เพื่อนำไปใช้ในสื่อประชาสัมพันธ์ โฆษณา ถ่ายทอดสด คลิปสรุปงาน และสื่ออื่น ๆ ที่เกี่ยวข้อง 
-        โดยไม่ต้องขออนุญาตเป็นรายครั้ง หรือจ่ายค่าตอบแทนใด ๆ เพิ่มเติม
-      </p>
-
-      <strong>EN: Personal Data & Media (Photo & Video)</strong>
-      <p>
-        The information you provide in this form will be used solely for event management, 
-        media accreditation, coordination, and safety purposes related to the 
-        WGP#1 Waterjet World Cup 2025. It will not be used for other purposes without your further consent, 
-        and appropriate security measures will be applied to protect your data.
-      </p>
-      <p>
-        By attending the event, you grant the organizers and their partners full consent to photograph, film, 
-        and record your image and voice for broadcasting, promotions, advertising, live streaming, 
-        highlight clips, and other related media, without the need for additional permission 
-        or compensation on a case-by-case basis.
-      </p>
-    </div>
-
-    <label class="consent-check">
-      <input type="checkbox" id="media_consent" required>
-      <span>
-        ฉันได้อ่านและยินยอมตามเงื่อนไขการใช้ข้อมูลและการบันทึกภาพ/วิดีโอข้างต้น<br>
-        I have read and agree to the above personal data and media conditions. *
-      </span>
-    </label>
-  </div>
-</div>
+      <div class="row">
+        <label class="consent-check">
+          <input type="checkbox" id="media_consent" required>
+          <span>
+            ฉันได้อ่านและยินยอมตามเงื่อนไขการใช้ข้อมูลและการบันทึกภาพ/วิดีโอข้างต้น<br>
+            I have read and agree to the above personal data and media conditions. *
+          </span>
+        </label>
+      </div>
 
       <button class="btn primary" type="submit" id="submit-btn">
         ส่งแบบฟอร์ม • Submit
@@ -271,71 +322,275 @@ function showForm(){
   document.getElementById("screen-form").classList.remove("hidden");
   document.getElementById("screen-thank").classList.add("hidden");
   document.getElementById("media-form").reset();
-  mediaUploadState={path:null,url:null};
+  document.getElementById("social-list").innerHTML = "";
+  document.getElementById("agency_upload_status").textContent = "กรุณาอัปโหลดรูปบัตรสื่อ";
+  document.getElementById("influencer_upload_status").textContent = "กรุณาอัปโหลดรูปหน้าโปรไฟล์หรือหน้าโพสต์ของโซเชียล";
+  mediaUploadState = { path:null, url:null, type:null };
+  updateMediaTypeUI();
 }
 
-/* UPLOAD MEDIA PROOF */
-document.getElementById("media_file").addEventListener("change", async function(){
-  const file = this.files[0];
-  if(!file) return;
+/* ---------- DOM ELEMENTS ---------- */
+const mediaForm          = document.getElementById("media-form");
+const mediaTypeSelect    = document.getElementById("media_type");
+const agencyUploadBox    = document.getElementById("agency_upload_box");
+const influencerBox      = document.getElementById("influencer_box");
+const mediaCompanyBox    = document.getElementById("media_company_box");
 
-  const status = document.getElementById("upload_status");
-  status.textContent = "Uploading...";
-  status.style.color = "#000";
+const agencyFileInput    = document.getElementById("agency_file");
+const agencyUploadStatus = document.getElementById("agency_upload_status");
 
-  const clean = file.name.replace(/[^a-zA-Z0-9.-]/g,"_");
-  const path = "media-proof/" + Date.now()+"-"+clean;
+const influencerFileInput    = document.getElementById("influencer_file");
+const influencerUploadStatus = document.getElementById("influencer_upload_status");
 
-  const {data, error} = await sb.storage.from("vip_media_proofs")
+const socialList         = document.getElementById("social-list");
+const addSocialBtn       = document.getElementById("add-social-btn");
+
+const submitBtn          = document.getElementById("submit-btn");
+
+/* ---------- UI UPDATE BY MEDIA TYPE ---------- */
+function updateMediaTypeUI(){
+  const type = mediaTypeSelect.value;
+
+  // ซ่อนทุกกล่องก่อน
+  agencyUploadBox.classList.add("hidden");
+  influencerBox.classList.add("hidden");
+  mediaCompanyBox.classList.add("hidden");
+
+  if(type === "agency"){
+    agencyUploadBox.classList.remove("hidden");
+    mediaCompanyBox.classList.remove("hidden");
+  } else if(type === "influencer"){
+    influencerBox.classList.remove("hidden");
+    // ถ้าไม่มีแถว social เลย ให้สร้าง 1 แถวเป็น default
+    if(!socialList.querySelector(".social-row")){
+      addSocialRow();
+    }
+  }
+}
+
+mediaTypeSelect.addEventListener("change", () => {
+  // reset สถานะไฟล์เมื่อเปลี่ยน type
+  mediaUploadState = { path:null, url:null, type: mediaTypeSelect.value || null };
+  agencyFileInput.value = "";
+  influencerFileInput.value = "";
+  agencyUploadStatus.textContent = "กรุณาอัปโหลดรูปบัตรสื่อ";
+  agencyUploadStatus.style.color = "#666";
+  influencerUploadStatus.textContent = "กรุณาอัปโหลดรูปหน้าโปรไฟล์หรือหน้าโพสต์ของโซเชียล";
+  influencerUploadStatus.style.color = "#666";
+
+  // ถ้าไม่ใช่ influencer ให้ล้าง social rows
+  if(mediaTypeSelect.value !== "influencer"){
+    socialList.innerHTML = "";
+  }
+
+  updateMediaTypeUI();
+});
+
+/* ---------- SOCIAL ROWS ---------- */
+function addSocialRow(){
+  const wrapper = document.createElement("div");
+  wrapper.className = "row two social-row";
+
+  wrapper.innerHTML = `
+    <div>
+      <span class="small-label">Platform</span>
+      <select class="social-platform">
+        <option value="Facebook">Facebook</option>
+        <option value="Instagram">Instagram</option>
+        <option value="TikTok">TikTok</option>
+        <option value="YouTube">YouTube</option>
+        <option value="X">X (Twitter)</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+    <div>
+      <span class="small-label">Account / URL</span>
+      <input class="social-account" placeholder="@yourname หรือ URL">
+    </div>
+  `;
+
+  socialList.appendChild(wrapper);
+}
+
+addSocialBtn.addEventListener("click", addSocialRow);
+
+function collectSocials(){
+  const rows = socialList.querySelectorAll(".social-row");
+  const result = [];
+  rows.forEach(row => {
+    const platformEl = row.querySelector(".social-platform");
+    const accountEl  = row.querySelector(".social-account");
+    const platform = platformEl ? platformEl.value.trim() : "";
+    const account  = accountEl ? accountEl.value.trim() : "";
+    if(platform && account){
+      result.push({ platform, account });
+    }
+  });
+  return result;
+}
+
+/* ---------- UPLOAD HELPER ---------- */
+async function uploadMediaFile(file, type){
+  if(!file) return null;
+  const cleanName = file.name.replace(/[^a-zA-Z0-9.\-]/g, "_");
+  const prefix = (type === "influencer") ? "influencer-proof" : "media-proof";
+  const path = `${prefix}/${Date.now()}-${cleanName}`;
+
+  const { data, error } = await sb
+    .storage
+    .from("vip_media_proofs")
     .upload(path, file);
 
   if(error){
-    status.textContent = "Upload failed, try again.";
-    status.style.color = "red";
-    return;
+    throw error;
   }
 
-  const { data:publicData } = sb.storage.from("vip_media_proofs").getPublicUrl(path);
+  const { data:publicData } = sb
+    .storage
+    .from("vip_media_proofs")
+    .getPublicUrl(path);
 
-  mediaUploadState = {
-    path: path,
-    url: publicData.publicUrl
-  };
+  return { path, url: publicData.publicUrl };
+}
 
-  document.getElementById("media_url").value = publicData.publicUrl;
-  status.textContent = "Uploaded ✓";
-  status.style.color = "green";
+/* ---------- AGENCY FILE UPLOAD ---------- */
+agencyFileInput.addEventListener("change", async function(){
+  const file = this.files[0];
+  if(!file) return;
+
+  agencyUploadStatus.textContent = "Uploading...";
+  agencyUploadStatus.style.color = "#000";
+
+  try{
+    const result = await uploadMediaFile(file, "agency");
+    mediaUploadState = {
+      path: result.path,
+      url: result.url,
+      type: "agency"
+    };
+    agencyUploadStatus.textContent = "Uploaded ✓";
+    agencyUploadStatus.style.color = "green";
+  }catch(err){
+    console.error(err);
+    agencyUploadStatus.textContent = "Upload failed, please try again.";
+    agencyUploadStatus.style.color = "red";
+  }
 });
 
-/* SUBMIT FORM */
-document.getElementById("media-form").addEventListener("submit", async function(e){
+/* ---------- INFLUENCER FILE UPLOAD ---------- */
+influencerFileInput.addEventListener("change", async function(){
+  const file = this.files[0];
+  if(!file) return;
+
+  influencerUploadStatus.textContent = "Uploading...";
+  influencerUploadStatus.style.color = "#000";
+
+  try{
+    const result = await uploadMediaFile(file, "influencer");
+    mediaUploadState = {
+      path: result.path,
+      url: result.url,
+      type: "influencer"
+    };
+    influencerUploadStatus.textContent = "Uploaded ✓";
+    influencerUploadStatus.style.color = "green";
+  }catch(err){
+    console.error(err);
+    influencerUploadStatus.textContent = "Upload failed, please try again.";
+    influencerUploadStatus.style.color = "red";
+  }
+});
+
+/* ---------- SUBMIT FORM ---------- */
+mediaForm.addEventListener("submit", async function(e){
   e.preventDefault();
 
-  if(!mediaUploadState.url){
-    alert("กรุณาอัปโหลด Media ID ก่อนส่งแบบฟอร์ม");
+  const mediaType = mediaTypeSelect.value;
+  if(!mediaType){
+    alert("กรุณาให้เจ้าหน้าที่เลือกประเภทสื่อก่อน");
     return;
   }
 
+  if(!mediaUploadState.url){
+    alert(
+      mediaType === "agency"
+        ? "กรุณาอัปโหลดรูปบัตรสื่อก่อนส่งฟอร์ม"
+        : "กรุณาอัปโหลดรูปหน้าโซเชียลของ Influencer ก่อนส่งฟอร์ม"
+    );
+    return;
+  }
+
+  let socials = null;
+  if(mediaType === "influencer"){
+    socials = collectSocials();
+    if(!socials.length){
+      alert("กรุณากรอกอย่างน้อย 1 โซเชียลมีเดียของ Influencer");
+      return;
+    }
+  }
+
+  const firstName = document.getElementById("first_name").value.trim();
+  const lastName  = document.getElementById("last_name").value.trim();
+  const phone     = document.getElementById("phone").value.trim();
+  const email     = document.getElementById("email").value.trim();
+  const mediaCompanyInput = document.getElementById("media_company");
+  let mediaCompany = mediaCompanyInput.value.trim();
+
+  if(!firstName || !lastName || !phone || !email){
+    alert("กรุณากรอกข้อมูลผู้ลงทะเบียนให้ครบถ้วน");
+    return;
+  }
+
+  if(mediaType === "agency"){
+    if(!mediaCompany){
+      alert("กรุณากรอกชื่อหน่วยงานหรือสำนักข่าว");
+      return;
+    }
+  }else{
+    // influencer ไม่ต้องมีสำนักข่าว
+    mediaCompany = null;
+  }
+
+  if(!document.getElementById("media_consent").checked){
+    alert("กรุณาให้ผู้ลงทะเบียนยืนยันการยินยอม (Consent)");
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = "กำลังบันทึก... / Submitting...";
+
   const payload = {
-    submitted_at: new Date().toISOString(),
-    first_name: document.getElementById("first_name").value.trim(),
-    last_name: document.getElementById("last_name").value.trim(),
-    phone: document.getElementById("phone").value.trim(),
-    email: document.getElementById("email").value.trim(),
-    media_company: document.getElementById("media_company").value.trim(),
-    media_proof_url: mediaUploadState.url,
-    media_consent: document.getElementById("media_consent").checked
+    submitted_at:     new Date().toISOString(),
+    media_type:       mediaType,              // ต้องมี column media_type
+    first_name:       firstName,
+    last_name:        lastName,
+    phone:            phone,
+    email:            email,
+    media_company:    mediaCompany,
+    media_proof_url:  mediaUploadState.url,
+    influencer_socials: mediaType === "influencer" ? socials : null, // ต้องมี column influencer_socials (JSONB)
+    media_consent:    true
   };
 
   const { error } = await sb.from("media_registrations").insert([payload]);
 
   if(error){
+    console.error(error);
     alert("เกิดข้อผิดพลาด: " + error.message);
+    submitBtn.disabled = false;
+    submitBtn.textContent = "ส่งแบบฟอร์ม • Submit";
     return;
   }
 
   document.getElementById("screen-form").classList.add("hidden");
   document.getElementById("screen-thank").classList.remove("hidden");
+  submitBtn.disabled = false;
+  submitBtn.textContent = "ส่งแบบฟอร์ม • Submit";
+});
+
+/* ---------- INIT ---------- */
+document.addEventListener("DOMContentLoaded", () => {
+  updateMediaTypeUI();
 });
 </script>
 
